@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Racines – Mon arbre généalogique</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f2f6ff;--sf:rgba(255,255,255,.78);--sf2:rgba(255,255,255,.95);--tx:#0f1b3d;--mu:#5b6b8f;--ln:#dbe4f7;
+  --ac:#4f46e5;--ac2:#06b6d4;--sea:#e8f1ff;--land:#c3d3f4;--sh:rgba(79,70,229,.22);
+  --rose:#e11d48;--amber:#d97706;--emerald:#059669;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#070c1c;--sf:rgba(18,27,58,.76);--sf2:rgba(24,35,72,.96);--tx:#e7edff;--mu:#93a2c9;--ln:#26335e;
+    --ac:#8b97ff;--ac2:#22d3ee;--sea:#0d1936;--land:#25396f;--sh:rgba(34,211,238,.18);
+    --rose:#fb7185;--amber:#fbbf24;--emerald:#34d399;color-scheme:dark
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070c1c;--sf:rgba(18,27,58,.76);--sf2:rgba(24,35,72,.96);--tx:#e7edff;--mu:#93a2c9;--ln:#26335e;
+  --ac:#8b97ff;--ac2:#22d3ee;--sea:#0d1936;--land:#25396f;--sh:rgba(34,211,238,.18);
+  --rose:#fb7185;--amber:#fbbf24;--emerald:#34d399;color-scheme:dark
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{
+  margin:0;color:var(--tx);font:15px/1.5 Inter,"Segoe UI",Helvetica,Arial,sans-serif;
+  background:radial-gradient(900px 520px at 5% -8%,rgba(79,70,229,.2),transparent),
+             radial-gradient(800px 520px at 100% 0,rgba(6,182,212,.22),transparent),var(--bg);
+  background-attachment:fixed
+}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,"Segoe UI",sans-serif;margin:0;letter-spacing:-.02em}
+header{padding:30px 20px 10px;max-width:1240px;margin:auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px}
+h1{font-size:clamp(2.2rem,6vw,3.8rem);line-height:1;font-weight:700;background:linear-gradient(100deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{color:var(--mu);max-width:64ch;margin:8px 0 0;font-size:.95rem}
+main{max-width:1240px;margin:auto;padding:12px 20px 64px;display:grid;gap:20px}
+section{background:var(--sf);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:22px;padding:20px;box-shadow:0 14px 44px -18px var(--sh)}
+h2{font-size:1.3rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+label{display:flex;flex-direction:column;font-size:.82rem;font-weight:600;color:var(--mu);gap:4px}
+input,select,textarea,button{font:inherit;color:var(--tx);background:var(--sf2);border:1px solid var(--ln);border-radius:12px;padding:8px 12px;min-width:0;transition:all .15s ease}
+button{cursor:pointer;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0;font-weight:600;box-shadow:0 6px 18px -6px var(--sh);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:hover{filter:brightness(1.06);transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button.sec{background:var(--sf2);color:var(--tx);border:1px solid var(--ln);box-shadow:none}
+button.sec:hover{border-color:var(--ac2)}
+button.soft{background:rgba(79,70,229,.12);color:var(--ac);border:1px solid rgba(79,70,229,.25);box-shadow:none;font-size:.83rem;padding:7px 10px}
+button.red{background:rgba(225,29,72,.08);color:var(--rose);border:1px solid rgba(225,29,72,.35);box-shadow:none}
+button.sm{padding:5px 9px;font-size:.8rem;border-radius:9px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
+
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:16px}
+@media(max-width:920px){.wrap{grid-template-columns:1fr}}
+.sky{
+  position:relative;overflow:auto;border:1px solid var(--ln);border-radius:16px;min-height:460px;max-height:76vh;
+  background:linear-gradient(var(--ln) 1px,transparent 1px) 0 0/34px 34px,
+             linear-gradient(90deg,var(--ln) 1px,transparent 1px) 0 0/34px 34px,var(--bg);
+  cursor:grab
+}
+.sky:active{cursor:grabbing}
+.sky svg{display:block;max-width:none;user-select:none}
+.nd{cursor:pointer;filter:drop-shadow(0 6px 10px var(--sh));transition:transform .15s ease}
+.nd:hover rect.card-bg{stroke:var(--ac2)}
+.nd:focus-visible rect.card-bg{stroke:var(--ac2);stroke-width:4}
+.union-badge{cursor:pointer;transition:transform .15s ease}
+.union-badge:hover{transform:scale(1.15)}
+.ghost{cursor:pointer}
+.ghost circle{fill:var(--sf2);stroke:var(--ac2);stroke-dasharray:4 3;transition:all .15s}
+.ghost:hover circle,.ghost:focus-visible circle{stroke:var(--ac);stroke-dasharray:0;fill:var(--bg)}
+
+.pan{display:grid;gap:10px;align-content:start;background:var(--sf2);border:1px solid var(--ln);border-radius:16px;padding:14px}
+.pan h3{font-size:1.1rem}
+.rel-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.76rem;font-weight:700;background:linear-gradient(135deg,rgba(79,70,229,.15),rgba(6,182,212,.18));color:var(--ac);border:1px solid rgba(79,70,229,.25);width:fit-content}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.union-list{display:grid;gap:6px;margin-top:2px}
+.union-item{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 9px;border-radius:10px;background:var(--bg);border:1px solid var(--ln);font-size:.82rem}
+.union-item .st{font-weight:700;font-size:.75rem;padding:2px 7px;border-radius:6px;cursor:pointer}
+.st-active{background:rgba(5,150,105,.14);color:var(--emerald)}
+.st-sep{background:rgba(225,29,72,.14);color:var(--rose)}
+
+/* Custom Country Select with crisp SVG flags */
+.csel{position:relative}
+.csel-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--sf2);color:var(--tx);border:1px solid var(--ln);border-radius:12px;padding:8px 12px;font-weight:500;box-shadow:none;text-align:left}
+.csel-btn:hover{filter:none;transform:none;border-color:var(--ac2)}
+.csel-val{display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csel-menu{position:absolute;z-index:50;top:calc(100% + 4px);left:0;right:0;background:var(--sf2);border:1px solid var(--ln);border-radius:14px;box-shadow:0 16px 36px -8px rgba(0,0,0,.28);padding:8px;display:none}
+.csel.open .csel-menu{display:block}
+.csel-search{width:100%;margin-bottom:6px;padding:6px 10px;font-size:.85rem}
+.csel-list{max-height:210px;overflow-y:auto;display:grid;gap:2px}
+.csel-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:.86rem}
+.csel-opt:hover,.csel-opt.active{background:rgba(79,70,229,.14);color:var(--ac);font-weight:600}
+
+.flag-svg{display:inline-block;width:20px;height:14px;border-radius:2.5px;box-shadow:0 0 0 1px rgba(128,128,128,.28);flex-shrink:0;vertical-align:middle}
+.flag-svg.lg{width:24px;height:17px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:20px}
+.pie svg{display:block;width:min(100%,240px);margin:0 auto 12px;filter:drop-shadow(0 10px 18px var(--sh))}
+.bar{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:.9rem}
+.bar i{display:block;height:10px;border-radius:6px;transition:width .3s ease}
+.bar em{font-style:normal;color:var(--mu);margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700}
+
+#map svg{width:100%;height:auto;display:block;background:var(--sea);border-radius:14px}
+.land{fill:var(--land);stroke:var(--ln);stroke-width:.4}
+.gr{stroke:var(--ln);stroke-width:.25;opacity:.8}
+
+textarea{width:100%;min-height:70px;font-family:ui-monospace,Menlo,monospace;font-size:.78rem}
+.card{border:1px solid var(--ac2);border-radius:18px;padding:18px;background:linear-gradient(135deg,rgba(79,70,229,.09),rgba(6,182,212,.12));display:grid;grid-template-columns:minmax(0,200px) 1fr;gap:16px;align-items:center}
+@media(max-width:560px){.card{grid-template-columns:1fr}}
+.card h3{margin:0 0 6px;font-size:1.3rem}
+.hint{color:var(--mu);font-size:.82rem;line-height:1.45}
+#msg{min-height:1.4em;color:var(--ac);font-size:.88rem;font-weight:600}
+
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--mu);margin-top:8px;align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+
+/* Custom confirm modal */
+.modal-bg{position:fixed;inset:0;background:rgba(7,12,28,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.modal-bg.show{display:flex}
+.modal-box{background:var(--sf2);border:1px solid var(--ln);border-radius:20px;padding:20px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.35);display:grid;gap:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Racines</h1>
+    <p>Construisez votre arbre complet : parents, enfants, oncles, tantes, cousins, séparations et familles recomposées. Cliquez sur n’importe quel membre pour explorer ses origines et sa carte.</p>
+  </div>
+  <div class="row">
+    <button class="sec sm" id="themeBtn" title="Changer le thème">🌓 Thème</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <h2 style="margin:0">Mon arbre généalogique</h2>
+      <div class="row">
+        <button class="sec sm" id="centerBtn">🎯 Centrer</button>
+        <button class="sec sm" id="demo">✨ Charger un exemple complet</button>
+        <button class="sec sm" id="reset">🗑️ Tout effacer</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div>
+        <div class="sky" id="sky"></div>
+        <div class="legend">
+          <span><strong style="color:var(--rose)">❤️</strong> En couple / Mariés</span>
+          <span><strong style="color:var(--mu)">💔</strong> Séparés / Divorcés (cliquer pour basculer)</span>
+          <span><strong style="color:var(--ac2)">━━</strong> Filiation biologique</span>
+          <span><strong style="color:var(--amber)">┄┄</strong> Beau-parent / Recomposé</span>
+        </div>
+      </div>
+      <div class="pan" id="pan"></div>
+    </div>
+    <div id="msg" role="status" style="margin-top:8px"></div>
+  </section>
+
+  <div class="grid">
+    <section>
+      <h2 id="ot">Origines</h2>
+      <div id="orig"></div>
+    </section>
+    <section>
+      <h2>Carte des origines</h2>
+      <div id="map"></div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Résultat à partager</h2>
+    <div class="card" id="card"></div>
+    <div class="row" style="margin-top:12px">
+      <button id="cpRes">📋 Copier le résultat</button>
+      <button class="sec" id="cpCode">🔑 Copier mon code</button>
+    </div>
+    <p class="hint" style="margin-top:12px">Votre code contient tout votre arbre (couples, séparations, famille élargie). Gardez-le précieusement ou partagez-le avec vos proches.</p>
+    <textarea id="code" aria-label="Code de l’arbre" placeholder="Collez un code ARB-… ici"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="load">📥 Retrouver mon arbre</button>
+    </div>
+  </section>
+</main>
+
+<!-- Confirmation Modal (no native confirm/alert) -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Confirmation</h3>
+    <p id="modalText" class="hint" style="margin:0;font-size:.92rem;color:var(--tx)"></p>
+    <div class="row" style="justify-content:flex-end">
+      <button class="sec" id="modalCancel">Annuler</button>
+      <button class="red" id="modalOk">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   1. BASE DE DONNÉES DES PAYS & DRAPEAUX VECTORIELS SVG NETS (COMPATIBLES WINDOWS/MAC/MOBILE)
+   ========================================================================== */
+var P = [
+  {n:"France",k:"FR",a:46.6,o:2.4,tags:"metropole"},
+  {n:"Algérie",k:"DZ",a:28,o:2.6},
+  {n:"Maroc",k:"MA",a:31.8,o:-7},
+  {n:"Tunisie",k:"TN",a:34,o:9.5},
+  {n:"Italie",k:"IT",a:42.8,o:12.5},
+  {n:"Espagne",k:"ES",a:40.2,o:-3.7},
+  {n:"Portugal",k:"PT",a:39.6,o:-8},
+  {n:"Allemagne",k:"DE",a:51.1,o:10.4},
+  {n:"Royaume-Uni",k:"GB",a:54,o:-2.5},
+  {n:"Irlande",k:"IE",a:53.2,o:-8},
+  {n:"Belgique",k:"BE",a:50.6,o:4.6},
+  {n:"Pays-Bas",k:"NL",a:52.2,o:5.5},
+  {n:"Suisse",k:"CH",a:46.8,o:8.2},
+  {n:"Pologne",k:"PL",a:52,o:19.4},
+  {n:"Russie",k:"RU",a:58,o:60},
+  {n:"Ukraine",k:"UA",a:49,o:31.5},
+  {n:"Roumanie",k:"RO",a:45.9,o:25},
+  {n:"Grèce",k:"GR",a:39,o:22},
+  {n:"Turquie",k:"TR",a:39,o:35},
+  {n:"Suède",k:"SE",a:62,o:15},
+  {n:"Norvège",k:"NO",a:61,o:9},
+  {n:"Égypte",k:"EG",a:26.8,o:30},
+  {n:"Sénégal",k:"SN",a:14.5,o:-14.5},
+  {n:"Guinée",k:"GN",a:10.4,o:-10.9,tags:"guinee conakry"},
+  {n:"Mali",k:"ML",a:17.5,o:-4},
+  {n:"Côte d’Ivoire",k:"CI",a:7.5,o:-5.5},
+  {n:"Cameroun",k:"CM",a:5.7,o:12.7},
+  {n:"Nigeria",k:"NG",a:9.1,o:8.7},
+  {n:"Congo (RDC)",k:"CD",a:-2.9,o:23.6},
+  {n:"Madagascar",k:"MG",a:-18.8,o:46.8},
+  {n:"Comores",k:"KM",a:-11.6,o:43.3},
+  {n:"Afrique du Sud",k:"ZA",a:-29,o:24},
+  {n:"Liban",k:"LB",a:33.9,o:35.9},
+  {n:"Iran",k:"IR",a:32.4,o:53.7},
+  {n:"Inde",k:"IN",a:21,o:78},
+  {n:"Chine",k:"CN",a:35,o:103},
+  {n:"Japon",k:"JP",a:36.2,o:138.3},
+  {n:"Vietnam",k:"VN",a:16,o:107.8,tags:"viet nam"},
+  {n:"Philippines",k:"PH",a:12.9,o:122},
+  {n:"Vanuatu",k:"VU",a:-16.5,o:167.5,tags:"oceanie pacifique"},
+  {n:"Haïti",k:"HT",a:19,o:-72.3},
+  {n:"Guadeloupe (971)",k:"GP",a:16.25,o:-61.55,tags:"dom tom outre mer antilles"},
+  {n:"Martinique (972)",k:"MQ",a:14.64,o:-61.02,tags:"dom tom outre mer antilles"},
+  {n:"Guyane française (973)",k:"GF",a:4.0,o:-53.0,tags:"dom tom outre mer amerique du sud"},
+  {n:"La Réunion (974)",k:"RE",a:-21.11,o:55.53,tags:"dom tom outre mer ocean indien"},
+  {n:"Saint-Pierre-et-Miquelon (975)",k:"PM",a:46.88,o:-56.32,tags:"dom tom outre mer amerique du nord"},
+  {n:"Mayotte (976)",k:"YT",a:-12.82,o:45.16,tags:"dom tom outre mer ocean indien"},
+  {n:"Saint-Barthélemy (977)",k:"BL",a:17.9,o:-62.83,tags:"dom tom outre mer antilles"},
+  {n:"Saint-Martin (978)",k:"MF",a:18.07,o:-63.05,tags:"dom tom outre mer antilles"},
+  {n:"Wallis-et-Futuna (986)",k:"WF",a:-13.3,o:-176.2,tags:"dom tom outre mer pacifique"},
+  {n:"Polynésie française (987)",k:"PF",a:-17.65,o:-149.45,tags:"dom tom outre mer tahiti pacifique"},
+  {n:"Nouvelle-Calédonie (988)",k:"NC",a:-21.3,o:165.5,tags:"dom tom outre mer kanaky pacifique"},
+  {n:"Canada",k:"CA",a:56,o:-100},
+  {n:"États-Unis",k:"US",a:39,o:-98},
+  {n:"Mexique",k:"MX",a:23.6,o:-102.5},
+  {n:"Brésil",k:"BR",a:-10,o:-52},
+  {n:"Argentine",k:"AR",a:-34,o:-64},
+  {n:"Pérou",k:"PE",a:-9.2,o:-75},
+  {n:"Australie",k:"AU",a:-25,o:134}
+];
+
+/* Ajout automatique des 96 départements français métropolitains (01 à 95, dont 2A et 2B) */
+var DEPTS_FR = [
+  ["01","Ain",46.1,5.35,"FR"],["02","Aisne",49.55,3.6,"FR"],["03","Allier",46.35,3.2,"FR"],["04","Alpes-de-Haute-Provence",44.1,6.2,"FR"],
+  ["05","Hautes-Alpes",44.65,6.25,"FR"],["06","Alpes-Maritimes",43.9,7.1,"FR"],["07","Ardèche",44.75,4.4,"FR"],["08","Ardennes",49.6,4.65,"FR"],
+  ["09","Ariège",42.9,1.5,"FR"],["10","Aube",48.3,4.1,"FR"],["11","Aude",43.1,2.4,"FR"],["12","Aveyron",44.3,2.6,"FR"],
+  ["13","Bouches-du-Rhône",43.5,5.1,"FR"],["14","Calvados",49.1,-0.4,"FR"],["15","Cantal",45.05,2.65,"FR"],["16","Charente",45.7,0.15,"FR"],
+  ["17","Charente-Maritime",45.8,-0.8,"FR"],["18","Cher",47.05,2.45,"FR"],["19","Corrèze",45.35,1.85,"FR"],["2A","Corse-du-Sud",41.85,9.0,"CO"],
+  ["2B","Haute-Corse",42.4,9.2,"CO"],["21","Côte-d’Or",47.4,4.75,"FR"],["22","Côtes-d’Armor",48.45,-2.85,"BZH"],["23","Creuse",46.1,2.05,"FR"],
+  ["24","Dordogne",45.1,0.7,"FR"],["25","Doubs",47.15,6.35,"FR"],["26","Drôme",44.7,5.15,"FR"],["27","Eure",49.1,0.95,"FR"],
+  ["28","Eure-et-Loir",48.35,1.4,"FR"],["29","Finistère",48.25,-4.05,"BZH"],["30","Gard",43.95,4.15,"FR"],["31","Haute-Garonne",43.35,1.2,"FR"],
+  ["32","Gers",43.65,0.45,"FR"],["33","Gironde",44.85,-0.55,"FR"],["34","Hérault",43.6,3.4,"FR"],["35","Ille-et-Vilaine",48.15,-1.65,"BZH"],
+  ["36","Indre",46.75,1.55,"FR"],["37","Indre-et-Loire",47.25,0.7,"FR"],["38","Isère",45.25,5.6,"FR"],["39","Jura",46.75,5.7,"FR"],
+  ["40","Landes",43.95,-0.8,"FR"],["41","Loir-et-Cher",47.6,1.4,"FR"],["42","Loire",45.7,4.15,"FR"],["43","Haute-Loire",45.05,3.8,"FR"],
+  ["44","Loire-Atlantique",47.3,-1.7,"BZH"],["45","Loiret",47.9,2.35,"FR"],["46","Lot",44.6,1.6,"FR"],["47","Lot-et-Garonne",44.35,0.45,"FR"],
+  ["48","Lozère",44.5,3.5,"FR"],["49","Maine-et-Loire",47.4,-0.55,"FR"],["50","Manche",49.1,-1.3,"FR"],["51","Marne",49.0,4.2,"FR"],
+  ["52","Haute-Marne",48.1,5.2,"FR"],["53","Mayenne",48.15,-0.65,"FR"],["54","Meurthe-et-Moselle",48.8,6.15,"FR"],["55","Meuse",49.0,5.35,"FR"],
+  ["56","Morbihan",47.85,-2.8,"BZH"],["57","Moselle",49.05,6.65,"FR"],["58","Nièvre",47.1,3.5,"FR"],["59","Nord",50.45,3.2,"FR"],
+  ["60","Oise",49.4,2.4,"FR"],["61","Orne",48.6,0.1,"FR"],["62","Pas-de-Calais",50.5,2.3,"FR"],["63","Puy-de-Dôme",45.75,3.15,"FR"],
+  ["64","Pyrénées-Atlantiques",43.25,-0.8,"FR"],["65","Hautes-Pyrénées",43.05,0.15,"FR"],["66","Pyrénées-Orientales",42.6,2.5,"FR"],["67","Bas-Rhin",48.65,7.55,"FR"],
+  ["68","Haut-Rhin",47.85,7.25,"FR"],["69","Rhône",45.85,4.65,"FR"],["70","Haute-Saône",47.65,6.1,"FR"],["71","Saône-et-Loire",46.65,4.55,"FR"],
+  ["72","Sarthe",48.0,0.2,"FR"],["73","Savoie",45.45,6.4,"FR"],["74","Haute-Savoie",46.05,6.4,"FR"],["75","Paris",48.86,2.35,"FR"],
+  ["76","Seine-Maritime",49.65,1.0,"FR"],["77","Seine-et-Marne",48.6,2.95,"FR"],["78","Yvelines",48.8,1.85,"FR"],["79","Deux-Sèvres",46.55,-0.3,"FR"],
+  ["80","Somme",49.95,2.25,"FR"],["81","Tarn",43.8,2.15,"FR"],["82","Tarn-et-Garonne",44.05,1.3,"FR"],["83","Var",43.45,6.25,"FR"],
+  ["84","Vaucluse",44.0,5.15,"FR"],["85","Vendée",46.65,-1.3,"FR"],["86","Vienne",46.55,0.45,"FR"],["87","Haute-Vienne",45.9,1.25,"FR"],
+  ["88","Vosges",48.15,6.4,"FR"],["89","Yonne",47.85,3.55,"FR"],["90","Territoire de Belfort",47.63,6.92,"FR"],["91","Essonne",48.52,2.25,"FR"],
+  ["92","Hauts-de-Seine",48.84,2.25,"FR"],["93","Seine-Saint-Denis",48.91,2.48,"FR"],["94","Val-de-Marne",48.78,2.47,"FR"],["95","Val-d’Oise",49.08,2.15,"FR"]
+];
+DEPTS_FR.forEach(function(d) {
+  P.push({
+    n: "France – " + d[0] + " " + d[1],
+    k: d[4],
+    a: d[2],
+    o: d[3],
+    tags: "departement france metropole " + d[0] + " " + d[1].toLowerCase() + (d[4]==="CO"?" corse":"") + (d[4]==="BZH"?" bretagne":"")
+  });
+});
+
+/* Dessins vectoriels SVG purs des drapeaux (viewBox 0 0 30 20) */
+var FLAGS_INNER = {
+  FR:'<rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ed2939"/>',
+  CO:'<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="9" r="3.6" fill="#111"/><path d="M11.5,14.5 Q15,12.5 18.5,14.5 L18.5,16.5 L11.5,16.5 Z" fill="#111"/><rect x="11.2" y="6.8" width="7.6" height="1.5" fill="#fff"/>',
+  BZH:'<rect width="30" height="20" fill="#fff"/><path d="M0,3.3 H30 M0,7.7 H30 M0,12.2 H30 M0,16.6 H30" stroke="#000" stroke-width="2.2"/><rect width="13" height="11" fill="#fff"/><circle cx="3.5" cy="3" r="1.1" fill="#000"/><circle cx="9.5" cy="3" r="1.1" fill="#000"/><circle cx="6.5" cy="6" r="1.1" fill="#000"/><circle cx="3.5" cy="8.8" r="1.1" fill="#000"/><circle cx="9.5" cy="8.8" r="1.1" fill="#000"/>',
+  GN:'<rect width="10" height="20" fill="#ce1126"/><rect x="10" width="10" height="20" fill="#fcd116"/><rect x="20" width="10" height="20" fill="#009460"/>',
+  VU:'<rect width="30" height="10" fill="#d21034"/><rect y="10" width="30" height="10" fill="#009543"/><polygon points="0,0 14,10 0,20" fill="#000"/><path d="M0,0 L14,10 L0,20" fill="none" stroke="#fdce12" stroke-width="2.2"/><rect y="8.8" width="30" height="2.4" fill="#000"/><path d="M13,9.2 H30 M13,10.8 H30" stroke="#fdce12" stroke-width="0.9"/><circle cx="5.2" cy="10" r="2.5" fill="none" stroke="#fdce12" stroke-width="1.2"/>',
+  GF:'<polygon points="0,0 30,0 30,20" fill="#078930"/><polygon points="0,0 30,20 0,20" fill="#fcdd09"/><polygon points="15,5.5 16.3,9.3 20.3,9.3 17.1,11.6 18.3,15.4 15,13.1 11.7,15.4 12.9,11.6 9.7,9.3 13.7,9.3" fill="#da121a"/>',
+  YT:'<rect width="30" height="20" fill="#fff"/><rect y="15.5" width="30" height="4.5" fill="#d21034"/><polygon points="11,5 19,5 19,11 15,14.5 11,11" fill="#1d63b8"/><path d="M11,10 H19 V11 L15,14.5 L11,11 Z" fill="#d21034"/><circle cx="15" cy="7.8" r="1.8" fill="#fff"/><circle cx="15" cy="7.3" r="1.4" fill="#1d63b8"/><path d="M8.5,6.5 Q7,9.5 8.5,12.5 M21.5,6.5 Q23,9.5 21.5,12.5" stroke="#888" stroke-width="1.5" fill="none"/>',
+  NC:'<rect width="30" height="6.7" fill="#0035ad"/><rect y="6.7" width="30" height="6.7" fill="#ed4135"/><rect y="13.3" width="30" height="6.7" fill="#009543"/><circle cx="11" cy="10" r="5.5" fill="#fae600" stroke="#000" stroke-width="0.8"/><line x1="11" y1="5.5" x2="11" y2="14.5" stroke="#000" stroke-width="1.2"/><circle cx="11" cy="9" r="1.4" fill="#000"/>',
+  PF:'<rect width="30" height="5" fill="#ce1126"/><rect y="5" width="30" height="10" fill="#fff"/><rect y="15" width="30" height="5" fill="#ce1126"/><circle cx="15" cy="10" r="3.8" fill="#ffce00"/><path d="M11.3,10.5 A3.8,3.8 0 0,0 18.7,10.5 Z" fill="#0055a5"/><rect x="14.4" y="7.5" width="1.2" height="3" fill="#ce1126"/>',
+  WF:'<rect width="30" height="20" fill="#ed2939"/><rect width="12" height="8" fill="#fff"/><rect width="4" height="8" fill="#002395"/><rect x="8" width="4" height="8" fill="#ed2939"/><polygon points="21,6 23,8 21,10 19,8" fill="#fff"/><polygon points="21,14 23,12 21,10 19,12" fill="#fff"/><polygon points="17,10 19,8 21,10 19,12" fill="#fff"/><polygon points="25,10 23,8 21,10 23,12" fill="#fff"/>',
+  PM:'<rect width="30" height="20" fill="#0055a5"/><rect width="8" height="6.7" fill="#ce1126"/><path d="M0,0 L8,6.7 M8,0 L0,6.7" stroke="#009e49" stroke-width="1.4"/><path d="M4,0 V6.7 M0,3.3 H8" stroke="#fff" stroke-width="1.3"/><rect y="6.7" width="8" height="6.7" fill="#fff"/><rect y="13.3" width="8" height="6.7" fill="#ce1126"/><rect x="1" y="14.5" width="6" height="1.4" fill="#ffce00"/><rect x="1" y="17.2" width="6" height="1.4" fill="#ffce00"/><polygon points="13,14 26,14 24,17 15,17" fill="#ffce00"/><polygon points="19,5 19,13 24,13" fill="#ffce00"/>',
+  MF:'<rect width="30" height="20" fill="#003399"/><polygon points="0,0 30,0 15,13" fill="#fff"/><polygon points="11,13 19,13 15,20" fill="#ce1126"/><circle cx="15" cy="9.5" r="2.2" fill="#ffce00"/>',
+  BL:'<rect width="30" height="20" fill="#fff"/><polygon points="11,5 19,5 19,12 15,15.5 11,12" fill="#0055a5" stroke="#d4af37" stroke-width="1"/><rect x="11" y="8.5" width="8" height="3" fill="#ce1126"/><circle cx="15" cy="6.8" r="1" fill="#ffce00"/><circle cx="15" cy="13" r="1" fill="#ffce00"/>',
+  IT:'<rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/>',
+  IE:'<rect width="10" height="20" fill="#169b62"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ff883e"/>',
+  BE:'<rect width="10" height="20" fill="#000"/><rect x="10" width="10" height="20" fill="#fae042"/><rect x="20" width="10" height="20" fill="#ed2939"/>',
+  RO:'<rect width="10" height="20" fill="#002b7f"/><rect x="10" width="10" height="20" fill="#fcd116"/><rect x="20" width="10" height="20" fill="#ce1126"/>',
+  CI:'<rect width="10" height="20" fill="#f77f00"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#009e60"/>',
+  ML:'<rect width="10" height="20" fill="#14b53a"/><rect x="10" width="10" height="20" fill="#fcd116"/><rect x="20" width="10" height="20" fill="#ce1126"/>',
+  NG:'<rect width="10" height="20" fill="#008751"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#008751"/>',
+  SN:'<rect width="10" height="20" fill="#00853f"/><rect x="10" width="10" height="20" fill="#fdef42"/><rect x="20" width="10" height="20" fill="#e31b23"/><polygon points="15,7 16,10 19,10 16.5,11.8 17.5,14.5 15,12.8 12.5,14.5 13.5,11.8 11,10 14,10" fill="#00853f"/>',
+  CM:'<rect width="10" height="20" fill="#007a5e"/><rect x="10" width="10" height="20" fill="#ce1126"/><rect x="20" width="10" height="20" fill="#fcd116"/><polygon points="15,7.5 15.8,10 18.4,10 16.3,11.5 17.1,14 15,12.5 12.9,14 13.7,11.5 11.6,10 14.2,10" fill="#fcd116"/>',
+  DE:'<rect width="30" height="6.7" fill="#000"/><rect y="6.7" width="30" height="6.7" fill="#dd0000"/><rect y="13.3" width="30" height="6.7" fill="#ffce00"/>',
+  NL:'<rect width="30" height="6.7" fill="#ae1c28"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#21468b"/>',
+  RU:'<rect width="30" height="6.7" fill="#fff"/><rect y="6.7" width="30" height="6.7" fill="#0039a6"/><rect y="13.3" width="30" height="6.7" fill="#d52b1e"/>',
+  UA:'<rect width="30" height="10" fill="#0057b7"/><rect y="10" width="30" height="10" fill="#ffd700"/>',
+  PL:'<rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/>',
+  ES:'<rect width="30" height="5" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/><rect y="15" width="30" height="5" fill="#aa151b"/><circle cx="9" cy="10" r="2" fill="#aa151b"/>',
+  PT:'<rect width="12" height="20" fill="#006600"/><rect x="12" width="18" height="20" fill="#ff0000"/><circle cx="12" cy="10" r="3.5" fill="#ffcc00"/>',
+  CH:'<rect width="30" height="20" fill="#d52b1e"/><rect x="13" y="4" width="4" height="12" fill="#fff"/><rect x="9" y="8" width="12" height="4" fill="#fff"/>',
+  SE:'<rect width="30" height="20" fill="#006aa7"/><rect x="9" width="4" height="20" fill="#fecc02"/><rect y="8" width="30" height="4" fill="#fecc02"/>',
+  NO:'<rect width="30" height="20" fill="#ba0c2f"/><rect x="8" width="5" height="20" fill="#fff"/><rect y="7.5" width="30" height="5" fill="#fff"/><rect x="9.2" width="2.6" height="20" fill="#00205b"/><rect y="8.7" width="30" height="2.6" fill="#00205b"/>',
+  GB:'<rect width="30" height="20" fill="#012169"/><path d="M0,0 L30,20 M30,0 L0,20" stroke="#fff" stroke-width="3.5"/><path d="M0,0 L30,20 M30,0 L0,20" stroke="#c8102e" stroke-width="1.8"/><rect x="12" width="6" height="20" fill="#fff"/><rect y="7" width="30" height="6" fill="#fff"/><rect x="13" width="4" height="20" fill="#c8102e"/><rect y="8" width="30" height="4" fill="#c8102e"/>',
+  GR:'<rect width="30" height="20" fill="#0d5eaf"/><path d="M0,3.3 H30 M0,7.7 H30 M0,12.2 H30 M0,16.6 H30" stroke="#fff" stroke-width="2.2"/><rect width="11" height="11" fill="#0d5eaf"/><rect x="4.5" width="2" height="11" fill="#fff"/><rect y="4.5" width="11" height="2" fill="#fff"/>',
+  TR:'<rect width="30" height="20" fill="#e30a17"/><circle cx="11.5" cy="10" r="5" fill="#fff"/><circle cx="12.8" cy="10" r="4" fill="#e30a17"/><polygon points="16.5,10 19.5,11 18.3,8.5 18.3,11.5 19.5,9" fill="#fff"/>',
+  DZ:'<rect width="15" height="20" fill="#006233"/><rect x="15" width="15" height="20" fill="#fff"/><circle cx="15" cy="10" r="5" fill="#d21034"/><circle cx="16.3" cy="10" r="4" fill="#fff"/><circle cx="15" cy="10" r="4" fill="none"/><path d="M16.2,6.2 A4,4 0 1,0 16.2,13.8 A3.2,3.2 0 1,1 16.2,6.2Z" fill="#d21034"/><polygon points="17.2,10 19.8,10.9 18.2,8.7 18.2,11.3 19.8,9.1" fill="#d21034"/>',
+  MA:'<rect width="30" height="20" fill="#c1272d"/><polygon points="15,5.5 16.3,9.5 20.5,9.5 17.1,11.9 18.4,15.8 15,13.4 11.6,15.8 12.9,11.9 9.5,9.5 13.7,9.5" fill="none" stroke="#006233" stroke-width="1.3"/>',
+  TN:'<rect width="30" height="20" fill="#e70013"/><circle cx="15" cy="10" r="5.5" fill="#fff"/><circle cx="15.3" cy="10" r="3.8" fill="#e70013"/><circle cx="16.3" cy="10" r="3" fill="#fff"/><polygon points="16.5,10 18.8,10.8 17.4,8.8 17.4,11.2 18.8,9.2" fill="#e70013"/>',
+  EG:'<rect width="30" height="6.7" fill="#ce1126"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#000"/><circle cx="15" cy="10" r="1.8" fill="#c09300"/>',
+  MG:'<rect width="10" height="20" fill="#fff"/><rect x="10" width="20" height="10" fill="#fc3d32"/><rect x="10" y="10" width="20" height="10" fill="#007e3a"/>',
+  KM:'<rect width="30" height="5" fill="#ffc61e"/><rect y="5" width="30" height="5" fill="#fff"/><rect y="10" width="30" height="5" fill="#ce1126"/><rect y="15" width="30" height="5" fill="#3a75c4"/><polygon points="0,0 14,10 0,20" fill="#3d8e33"/><circle cx="5.2" cy="10" r="3" fill="#fff"/><circle cx="6.2" cy="10" r="2.5" fill="#3d8e33"/>',
+  CD:'<rect width="30" height="20" fill="#007fff"/><path d="M0,17 L27,0 L30,0 L30,3 L3,20 L0,20 Z" fill="#f7d618"/><path d="M0,18 L28,0 L30,0 L30,2 L2,20 L0,20 Z" fill="#ce1021"/><polygon points="5.5,3 6.3,5.3 8.7,5.3 6.8,6.7 7.5,9 5.5,7.6 3.5,9 4.2,6.7 2.3,5.3 4.7,5.3" fill="#f7d618"/>',
+  ZA:'<rect width="30" height="10" fill="#e03c31"/><rect y="10" width="30" height="10" fill="#001489"/><path d="M0,0 L13,10 L0,20 M13,10 H30" stroke="#fff" stroke-width="5.5" fill="none"/><path d="M0,0 L13,10 L0,20 M13,10 H30" stroke="#007749" stroke-width="3.4" fill="none"/><polygon points="0,3.2 8.5,10 0,16.8" fill="#000"/>',
+  LB:'<rect width="30" height="5" fill="#ee161f"/><rect y="5" width="30" height="10" fill="#fff"/><rect y="15" width="30" height="5" fill="#ee161f"/><polygon points="15,6 11.5,13 18.5,13" fill="#00a651"/><rect x="14.2" y="13" width="1.6" height="1.5" fill="#00a651"/>',
+  IR:'<rect width="30" height="6.7" fill="#239f40"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#da0000"/><circle cx="15" cy="10" r="2" fill="#da0000"/>',
+  IN:'<rect width="30" height="6.7" fill="#ff9933"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#138808"/><circle cx="15" cy="10" r="2.4" fill="none" stroke="#000080" stroke-width="0.8"/>',
+  CN:'<rect width="30" height="20" fill="#de2910"/><polygon points="5,3 5.8,5.4 8.3,5.4 6.3,6.8 7,9.2 5,7.7 3,9.2 3.7,6.8 1.7,5.4 4.2,5.4" fill="#ffde00"/>',
+  JP:'<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="5.5" fill="#bc002d"/>',
+  VN:'<rect width="30" height="20" fill="#da251d"/><polygon points="15,4.5 16.4,8.8 20.8,8.8 17.2,11.4 18.6,15.6 15,13 11.4,15.6 12.8,11.4 9.2,8.8 13.6,8.8" fill="#ffff00"/>',
+  PH:'<rect width="30" height="10" fill="#0038a8"/><rect y="10" width="30" height="10" fill="#ce1126"/><polygon points="0,0 14,10 0,20" fill="#fff"/><circle cx="5" cy="10" r="2.3" fill="#fcd116"/>',
+  HT:'<rect width="30" height="10" fill="#00209f"/><rect y="10" width="30" height="10" fill="#d21034"/><rect x="11.5" y="7" width="7" height="6" fill="#fff"/>',
+  GP:'<rect width="30" height="10" fill="#002395"/><rect y="10" width="30" height="10" fill="#009e49"/><circle cx="15" cy="10" r="3.5" fill="#fcd116"/>',
+  MQ:'<rect width="30" height="10" fill="#00a650"/><rect y="10" width="30" height="10" fill="#000"/><polygon points="0,0 14,10 0,20" fill="#ef1923"/>',
+  RE:'<rect width="30" height="20" fill="#002395"/><polygon points="15,10 0,20 30,20" fill="#ed2939"/><polygon points="15,10 0,0 4,0 15,10 26,0 30,0" fill="#ffde00"/><polygon points="15,10 0,8.5 0,11.5" fill="#ffde00"/><polygon points="15,10 30,8.5 30,11.5" fill="#ffde00"/>',
+  CA:'<rect width="7.5" height="20" fill="#ff0000"/><rect x="7.5" width="15" height="20" fill="#fff"/><rect x="22.5" width="7.5" height="20" fill="#ff0000"/><polygon points="15,5 16.5,9 20,9 17.2,11.5 18.2,15 15,13 11.8,15 12.8,11.5 10,9 13.5,9" fill="#ff0000"/>',
+  US:'<rect width="30" height="20" fill="#b22234"/><path d="M0,2.8 H30 M0,5.8 H30 M0,8.8 H30 M0,11.8 H30 M0,14.8 H30 M0,17.8 H30" stroke="#fff" stroke-width="1.4"/><rect width="13" height="10.8" fill="#3c3b6e"/>',
+  MX:'<rect width="10" height="20" fill="#006847"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce1126"/><circle cx="15" cy="10" r="2.2" fill="#8c6239"/>',
+  BR:'<rect width="30" height="20" fill="#009c3b"/><polygon points="15,2.5 27,10 15,17.5 3,10" fill="#ffdf00"/><circle cx="15" cy="10" r="4.3" fill="#002776"/>',
+  AR:'<rect width="30" height="6.7" fill="#74acdf"/><rect y="6.7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#74acdf"/><circle cx="15" cy="10" r="2.2" fill="#f6b40e"/>',
+  PE:'<rect width="10" height="20" fill="#d91023"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#d91023"/>',
+  AU:'<rect width="30" height="20" fill="#00008b"/><rect width="14" height="10" fill="#012169"/><rect x="6" width="2" height="10" fill="#fff"/><rect y="4" width="14" height="2" fill="#fff"/><rect x="6.4" width="1.2" height="10" fill="#c8102e"/><rect y="4.4" width="14" height="1.2" fill="#c8102e"/><circle cx="22" cy="6" r="1.2" fill="#fff"/><circle cx="25" cy="10" r="1.2" fill="#fff"/><circle cx="21" cy="15" r="1.2" fill="#fff"/><circle cx="7" cy="15" r="1.8" fill="#fff"/>'
+};
+
+function getCountry(name) {
+  return P.find(function(q){ return q.n === name; }) || P[0];
+}
+function flagInner(name) {
+  var c = getCountry(name);
+  return FLAGS_INNER[c.k] || '<rect width="30" height="20" fill="#64748b"/>';
+}
+function flagHTML(name, cls) {
+  return '<svg class="flag-svg ' + (cls || '') + '" viewBox="0 0 30 20" aria-hidden="true">' + flagInner(name) + '</svg>';
+}
+function flagSVGGroup(name, x, y, w, h) {
+  return '<g transform="translate(' + x + ',' + y + ')"><svg width="' + w + '" height="' + h + '" viewBox="0 0 30 20">' + flagInner(name) + '<rect width="30" height="20" fill="none" stroke="rgba(128,128,128,.45)" stroke-width="1"/></svg></g>';
+}
+
+var CONT = [
+  [[-168,66],[-140,70],[-95,72],[-80,63],[-60,55],[-55,48],[-70,42],[-80,30],[-97,26],[-90,15],[-80,8],[-105,20],[-118,32],[-125,45],[-135,58],[-165,60]],
+  [[-80,8],[-60,10],[-50,0],[-35,-7],[-40,-22],[-58,-38],[-68,-55],[-75,-45],[-72,-20],[-81,-5]],
+  [[-10,36],[-9,43],[0,50],[10,56],[20,70],[40,68],[70,73],[110,76],[150,70],[180,66],[160,55],[140,45],[122,30],[110,20],[105,10],[98,16],[90,22],[78,8],[72,20],[58,25],[50,30],[36,36],[28,41],[20,38],[12,44],[5,43]],
+  [[-17,21],[-10,35],[10,37],[32,31],[43,12],[51,11],[40,-15],[33,-27],[20,-35],[12,-17],[9,4],[-8,5],[-17,14]],
+  [[114,-22],[130,-12],[142,-11],[153,-27],[146,-39],[130,-32],[115,-34]]
+];
+
+/* ==========================================================================
+   2. MODÈLE DE DONNÉES GRAPHE FAMILIAL COMPLET (V2) + COMPATIBILITÉ V1
+   Personne : { id, n (nom), y (année), c (pays), g ('M'|'F'|''), f (pèreId), m (mèreId), fStep (bool), mStep (bool) }
+   Union : { id, a (id1), b (id2), st ('active' | 'separated') }
+   ========================================================================== */
+var K = "racines-v2";
+var K_OLD = "racines-v1";
+var S = { p: [], u: [], r: null };
+var SEL = null;
+var MODE = null; // null | { type: 'addParent'|'addPartner'|'addChild'|'addSibling'|'addUncleAunt'|'addCousin', targetId, slot, partnerId }
+
+var $ = function(i){ return document.getElementById(i); };
+function uid(prefix){ return (prefix||"p") + Date.now().toString(36) + Math.floor(Math.random()*999).toString(36); }
+function col(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))%360; return "hsl("+h+",52%,46%)"; }
+function get(id){ return S.p.find(function(x){ return x.id === id; }); }
+function esc(s){ return String(s||"").replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function say(t){ $("msg").textContent = t; }
+
+function save(){
+  try { localStorage.setItem(K, JSON.stringify(S)); } catch(e){}
+}
+
+function migrateIfNeeded(data) {
+  if (!data || !Array.isArray(data.p)) throw new Error("Format invalide");
+  if (!Array.isArray(data.u)) data.u = [];
+  data.p.forEach(function(person) {
+    if (person.f === undefined) person.f = null;
+    if (person.m === undefined) person.m = null;
+    if (person.g === undefined) person.g = "";
+    if (person.fStep === undefined) person.fStep = false;
+    if (person.mStep === undefined) person.mStep = false;
+    // Créer automatiquement une union entre père et mère s'ils existent tous les deux
+    if (person.f && person.m && getFromArr(data.p, person.f) && getFromArr(data.p, person.m)) {
+      ensureUnionArr(data.u, person.f, person.m, "active");
+    }
+  });
+  return data;
+}
+function getFromArr(arr, id){ return arr.find(function(x){ return x.id === id; }); }
+function ensureUnionArr(uArr, a, b, st) {
+  if (!a || !b || a === b) return null;
+  var ex = uArr.find(function(u){ return (u.a===a && u.b===b) || (u.a===b && u.b===a); });
+  if (ex) return ex;
+  var nu = { id: uid("u"), a: a, b: b, st: st || "active" };
+  uArr.push(nu);
+  return nu;
+}
+function ensureUnion(a, b, st){ return ensureUnionArr(S.u, a, b, st); }
+function getUnionsOf(id){ return S.u.filter(function(u){ return u.a === id || u.b === id; }); }
+function getChildrenOf(id){ return S.p.filter(function(c){ return c.f === id || c.m === id; }); }
+
+function encode(){ return "ARB-" + btoa(unescape(encodeURIComponent(JSON.stringify(S)))); }
+function decode(c){
+  c = c.trim();
+  if (c.indexOf("ARB-") !== 0) throw 0;
+  var d = JSON.parse(decodeURIComponent(escape(atob(c.slice(4)))));
+  return migrateIfNeeded(d);
+}
+
+/* Confirmation dialog asynchrone sans window.confirm */
+function askConfirm(title, text, onOk) {
+  $("modalTitle").textContent = title;
+  $("modalText").textContent = text;
+  $("modal").classList.add("show");
+  $("modalOk").onclick = function(){ $("modal").classList.remove("show"); onOk(); };
+  $("modalCancel").onclick = function(){ $("modal").classList.remove("show"); };
+}
+
+/* ==========================================================================
+   3. CALCUL DES ORIGINES GÉNÉTIQUES (EN IGNORANT LES BEAUX-PARENTS NON BIOLOGIQUES)
+   ========================================================================== */
+function origins(id, w, acc, d) {
+  var p = get(id);
+  if (!p || d > 14) return;
+  var bioF = (p.f && !p.fStep && get(p.f)) ? p.f : null;
+  var bioM = (p.m && !p.mStep && get(p.m)) ? p.m : null;
+  if (!bioF && !bioM) {
+    acc[p.c] = (acc[p.c] || 0) + w;
+    return;
+  }
+  if (bioF) origins(bioF, w / 2, acc, d + 1);
+  else acc[p.c] = (acc[p.c] || 0) + w / 2;
+
+  if (bioM) origins(bioM, w / 2, acc, d + 1);
+  else acc[p.c] = (acc[p.c] || 0) + w / 2;
+}
+function calc(id) {
+  var a = {};
+  if (get(id)) origins(id, 100, a, 0);
+  return Object.keys(a).map(function(k){ return { n: k, v: a[k] }; }).sort(function(x, y){ return y.v - x.v; });
+}
+function fmt(v){ return (Math.round(v * 10) / 10).toString().replace(".", ",") + " %"; }
+function T(){ return get(SEL) || get(S.r); }
+
+/* ==========================================================================
+   4. DÉTECTION INTELLIGENTE DU LIEN DE PARENTÉ PAR RAPPORT À LA PERSONNE RACINE (S.r)
+   ========================================================================== */
+function getRelationLabel(targetId) {
+  var root = get(S.r);
+  var target = get(targetId);
+  if (!root || !target) return "";
+  if (root.id === target.id) return "Moi (Racine)";
+
+  var isF = target.g === "F";
+  var isM = target.g === "M";
+  function mf(m, f, neutral) { return isM ? m : (isF ? f : neutral); }
+
+  // Conjoint ou ex-conjoint direct de la racine
+  var directU = S.u.find(function(u){ return (u.a===root.id && u.b===target.id) || (u.b===root.id && u.a===target.id); });
+  if (directU) {
+    if (directU.st === "separated") return mf("Ex-conjoint", "Ex-conjointe", "Ex-conjoint(e)");
+    return mf("Conjoint", "Conjointe", "Conjoint(e)");
+  }
+
+  // Parents directs & beaux-parents directs
+  if (root.f === target.id) return root.fStep ? "Beau-père" : "Père";
+  if (root.m === target.id) return root.mStep ? "Belle-mère" : "Mère";
+
+  // Nouveau conjoint d'un parent (beau-père / belle-mère)
+  var parentIds = [root.f, root.m].filter(Boolean);
+  for (var i = 0; i < parentIds.length; i++) {
+    var pu = S.u.find(function(u){ return (u.a===parentIds[i] && u.b===target.id) || (u.b===parentIds[i] && u.a===target.id); });
+    if (pu) {
+      if (pu.st === "separated") return mf("Ex-conjoint d’un parent", "Ex-conjointe d’un parent", "Ex-conjoint(e) d’un parent");
+      return mf("Beau-père", "Belle-mère", "Beau-parent");
+    }
+  }
+
+  // Enfants directs
+  if (target.f === root.id || target.m === root.id) {
+    var isStepChild = (target.f === root.id && target.fStep) || (target.m === root.id && target.mStep);
+    if (isStepChild) return mf("Beau-fils", "Belle-fille", "Bel-enfant");
+    return mf("Fils", "Fille", "Enfant");
+  }
+
+  // Frères / sœurs & demi-frères / demi-sœurs
+  var sameF = root.f && target.f && root.f === target.f;
+  var sameM = root.m && target.m && root.m === target.m;
+  if (sameF && sameM) return mf("Frère", "Sœur", "Frère / Sœur");
+  if (sameF || sameM) return mf("Demi-frère", "Demi-sœur", "Demi-frère / sœur");
+
+  // Grands-parents
+  var gpIds = [];
+  parentIds.forEach(function(pid){
+    var p = get(pid);
+    if (p) {
+      if (p.f) gpIds.push(p.f);
+      if (p.m) gpIds.push(p.m);
+    }
+  });
+  if (gpIds.indexOf(target.id) !== -1) return mf("Grand-père", "Grand-mère", "Grand-parent");
+
+  // Arrière-grands-parents
+  var ggpIds = [];
+  gpIds.forEach(function(gpid){
+    var gp = get(gpid);
+    if (gp) {
+      if (gp.f) ggpIds.push(gp.f);
+      if (gp.m) ggpIds.push(gp.m);
+    }
+  });
+  if (ggpIds.indexOf(target.id) !== -1) return mf("Arrière-grand-père", "Arrière-grand-mère", "Arrière-grand-parent");
+
+  // Oncles & Tantes (enfants des grands-parents, autres que les parents)
+  var uncleAuntIds = [];
+  S.p.forEach(function(cand){
+    if (parentIds.indexOf(cand.id) === -1 && ((cand.f && gpIds.indexOf(cand.f) !== -1) || (cand.m && gpIds.indexOf(cand.m) !== -1))) {
+      uncleAuntIds.push(cand.id);
+    }
+  });
+  if (uncleAuntIds.indexOf(target.id) !== -1) return mf("Oncle", "Tante", "Oncle / Tante");
+
+  // Conjoint d'un oncle ou d'une tante
+  for (var j = 0; j < uncleAuntIds.length; j++) {
+    var uu = S.u.find(function(u){ return (u.a===uncleAuntIds[j] && u.b===target.id) || (u.b===uncleAuntIds[j] && u.a===target.id); });
+    if (uu) return mf("Oncle (par alliance)", "Tante (par alliance)", "Oncle / Tante");
+  }
+
+  // Cousins & Cousines (enfants des oncles / tantes)
+  if ((target.f && uncleAuntIds.indexOf(target.f) !== -1) || (target.m && uncleAuntIds.indexOf(target.m) !== -1)) {
+    return mf("Cousin", "Cousine", "Cousin(e)");
+  }
+
+  // Neveux & Nièces (enfants des frères/sœurs)
+  var sibIds = S.p.filter(function(cand){
+    return cand.id !== root.id && ((root.f && cand.f === root.f) || (root.m && cand.m === root.m));
+  }).map(function(s){ return s.id; });
+  if ((target.f && sibIds.indexOf(target.f) !== -1) || (target.m && sibIds.indexOf(target.m) !== -1)) {
+    return mf("Neveu", "Nièce", "Neveu / Nièce");
+  }
+
+  // Petits-enfants
+  var childIds = getChildrenOf(root.id).map(function(c){ return c.id; });
+  if ((target.f && childIds.indexOf(target.f) !== -1) || (target.m && childIds.indexOf(target.m) !== -1)) {
+    return mf("Petit-fils", "Petite-fille", "Petit-enfant");
+  }
+
+  return "Membre de la famille";
+}
+
+/* ==========================================================================
+   5. MOTEUR DE MISE EN PAGE MULTI-GÉNÉRATIONS & FAMILLES RECOMPOSÉES
+   ========================================================================== */
+function computeLayout() {
+  var pos = {};
+  if (!S.p.length || !get(S.r)) return { pos: pos, minX: 0, maxX: 0, minG: 0, maxG: 0 };
+
+  // 1. Calculer le niveau générationnel (gen) de chaque personne connectée à S.r
+  // gen = 0 pour S.r, +1 pour parents, +2 pour grands-parents, -1 pour enfants, etc.
+  var gen = {};
+  gen[S.r] = 0;
+  var changed = true;
+  var guard = 0;
+  while (changed && guard < 40) {
+    changed = false;
+    guard++;
+    S.p.forEach(function(p) {
+      if (gen[p.id] !== undefined) {
+        if (p.f && get(p.f) && gen[p.f] === undefined) { gen[p.f] = gen[p.id] + 1; changed = true; }
+        if (p.m && get(p.m) && gen[p.m] === undefined) { gen[p.m] = gen[p.id] + 1; changed = true; }
+      } else {
+        if (p.f && gen[p.f] !== undefined) { gen[p.id] = gen[p.f] - 1; changed = true; }
+        else if (p.m && gen[p.m] !== undefined) { gen[p.id] = gen[p.m] - 1; changed = true; }
+      }
+    });
+    S.u.forEach(function(u) {
+      if (gen[u.a] !== undefined && gen[u.b] === undefined && get(u.b)) { gen[u.b] = gen[u.a]; changed = true; }
+      if (gen[u.b] !== undefined && gen[u.a] === undefined && get(u.a)) { gen[u.a] = gen[u.b]; changed = true; }
+    });
+  }
+  // Rattacher d'éventuelles personnes isolées à gen 0
+  S.p.forEach(function(p){ if (gen[p.id] === undefined) gen[p.id] = 0; });
+
+  // 2. Grouper par génération et ordonner intelligemment les clusters familiaux
+  var byGen = {};
+  var minG = 0, maxG = 0;
+  S.p.forEach(function(p) {
+    var g = gen[p.id];
+    minG = Math.min(minG, g);
+    maxG = Math.max(maxG, g);
+    if (!byGen[g]) byGen[g] = [];
+    byGen[g].push(p);
+  });
+
+  // Fonction pour regrouper une génération en chaînes de partenaires (ex: ExConjoint -- Personne -- NouveauConjoint)
+  function buildChains(people) {
+    var visited = {};
+    var chains = [];
+    var idsSet = {};
+    people.forEach(function(p){ idsSet[p.id] = true; });
+
+    // Trier d'abord par parents communs pour garder frères/sœurs et cousins côte à côte
+    people.sort(function(a, b) {
+      var pa = (a.f || "") + "_" + (a.m || "");
+      var pb = (b.f || "") + "_" + (b.m || "");
+      if (pa !== pb) return pa.localeCompare(pb);
+      return a.id.localeCompare(b.id);
+    });
+
+    people.forEach(function(startP) {
+      if (visited[startP.id]) return;
+      // Construire la composante connexe d'unions dans cette génération
+      var comp = [];
+      var q = [startP.id];
+      visited[startP.id] = true;
+      while (q.length) {
+        var curr = q.shift();
+        comp.push(curr);
+        S.u.forEach(function(u) {
+          var other = u.a === curr ? u.b : (u.b === curr ? u.a : null);
+          if (other && idsSet[other] && !visited[other]) {
+            visited[other] = true;
+            q.push(other);
+          }
+        });
+      }
+      // Ordonner la composante pour que le pivot (celui qui a des parents dans l'arbre ou plusieurs partenaires) soit au centre
+      if (comp.length === 3) {
+        var pivot = comp.find(function(id){ return getUnionsOf(id).length >= 2; });
+        if (pivot) {
+          var others = comp.filter(function(id){ return id !== pivot; });
+          // Mettre l'ex-conjoint à gauche, le pivot au centre, le conjoint actif à droite
+          others.sort(function(x, y) {
+            var ux = S.u.find(function(u){ return (u.a===pivot&&u.b===x)||(u.b===pivot&&u.a===x); });
+            return (ux && ux.st === "separated") ? -1 : 1;
+          });
+          comp = [others[0], pivot, others[1]];
+        }
+      } else if (comp.length === 2) {
+        // Père à gauche, mère à droite si applicable
+        var p0 = get(comp[0]), p1 = get(comp[1]);
+        if (p0 && p1 && p0.g === "F" && p1.g === "M") comp = [comp[1], comp[0]];
+      }
+      chains.push(comp);
+    });
+    return chains;
+  }
+
+  // Placement horizontal centré par génération, puis ajustement autour des enfants/parents
+  var CARD_W = 138;
+  var GAP_PARTNER = 44; // espace pour l'icône ❤️ / 💔 entre partenaires
+  var GAP_CLUSTER = 46;
+
+  // Calculer d'abord de haut en bas (maxG -> minG) pour que les enfants se placent sous leurs parents
+  for (var g = maxG; g >= minG; g--) {
+    var list = byGen[g] || [];
+    var chains = buildChains(list);
+
+    // Trier chaque chaîne selon la position X moyenne de ses parents déjà placés
+    chains.sort(function(c1, c2) {
+      function avgParentX(chain) {
+        var sum = 0, cnt = 0;
+        chain.forEach(function(id) {
+          var p = get(id);
+          if (p && p.f && pos[p.f]) { sum += pos[p.f].x; cnt++; }
+          if (p && p.m && pos[p.m]) { sum += pos[p.m].x; cnt++; }
+        });
+        return cnt ? sum / cnt : 0;
+      }
+      return avgParentX(c1) - avgParentX(c2);
+    });
+
+    var totalW = 0;
+    var chainWidths = chains.map(function(ch) {
+      var w = ch.length * CARD_W + (ch.length - 1) * GAP_PARTNER;
+      totalW += w;
+      return w;
+    });
+    totalW += Math.max(0, chains.length - 1) * GAP_CLUSTER;
+
+    var curX = -totalW / 2;
+    chains.forEach(function(ch, idx) {
+      ch.forEach(function(id, i) {
+        pos[id] = { x: curX + CARD_W / 2, g: g, p: get(id) };
+        curX += CARD_W + (i < ch.length - 1 ? GAP_PARTNER : 0);
+      });
+      curX += GAP_CLUSTER;
+    });
+  }
+
+  // Seconde passe : recentrer chaque parent au-dessus de ses enfants si nécessaire sans chevauchement
+  for (var g2 = minG + 1; g2 <= maxG; g2++) {
+    var rowNodes = Object.keys(pos).map(function(id){ return pos[id]; }).filter(function(o){ return o.g === g2; }).sort(function(a,b){ return a.x - b.x; });
+    rowNodes.forEach(function(node) {
+      var kids = getChildrenOf(node.p.id).filter(function(k){ return pos[k.id]; });
+      if (kids.length) {
+        var avgK = kids.reduce(function(s, k){ return s + pos[k.id].x; }, 0) / kids.length;
+        // Décalage doux si partenaire présent
+        var unions = getUnionsOf(node.p.id);
+        if (unions.length === 0) node.x = avgK;
+      }
+    });
+    // Résoudre les collisions horizontales dans la rangée
+    for (var i = 1; i < rowNodes.length; i++) {
+      var isPartner = S.u.some(function(u){
+        return (u.a===rowNodes[i-1].p.id && u.b===rowNodes[i].p.id) || (u.b===rowNodes[i-1].p.id && u.a===rowNodes[i].p.id);
+      });
+      var minDist = CARD_W + (isPartner ? GAP_PARTNER : 26);
+      if (rowNodes[i].x - rowNodes[i-1].x < minDist) {
+        rowNodes[i].x = rowNodes[i-1].x + minDist;
+      }
+    }
+  }
+
+  var minX = Infinity, maxX = -Infinity;
+  Object.keys(pos).forEach(function(id) {
+    minX = Math.min(minX, pos[id].x - CARD_W / 2);
+    maxX = Math.max(maxX, pos[id].x + CARD_W / 2);
+  });
+  if (!isFinite(minX)) { minX = -200; maxX = 200; }
+
+  return { pos: pos, minX: minX, maxX: maxX, minG: minG, maxG: maxG };
+}
+
+/* ==========================================================================
+   6. RENDU SVG DE L'ARBRE (CARTES AVEC DRAPEAUX SVG, UNIONS ❤️/💔, LIENS ENFANTS)
+   ========================================================================== */
+function drawTree() {
+  var sk = $("sky");
+  if (!get(S.r) || !S.p.length) {
+    sk.innerHTML = '<div style="padding:46px 24px;text-align:center"><p class="hint" style="font-size:.95rem">Votre arbre est encore vide.<br>Commencez par créer votre fiche à droite, puis ajoutez parents, conjoints, enfants, frères/sœurs, oncles ou cousins.</p></div>';
+    return;
+  }
+
+  var L = computeLayout();
+  var GH = 132;
+  var PAD_X = 90;
+  var PAD_Y = 85;
+  var W = Math.max(680, (L.maxX - L.minX) + PAD_X * 2);
+  var H = Math.max(440, (L.maxG - L.minG + 1) * GH + PAD_Y * 2);
+
+  function X(rawX) { return (rawX - L.minX) + PAD_X; }
+  function Y(g) { return PAD_Y + (L.maxG - g) * GH; }
+
+  var q = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="Arbre généalogique">';
+
+  // Définitions de dégradés et ombres
+  q += '<defs><linearGradient id="trunkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ac2)" stop-opacity="0.5"/><stop offset="100%" stop-color="var(--ac)" stop-opacity="0.1"/></linearGradient></defs>';
+
+  // Tronc symbolique sous la racine
+  var rootPos = L.pos[S.r];
+  if (rootPos) {
+    var rx = X(rootPos.x);
+    var ry = Y(rootPos.g);
+    q += '<path d="M' + (rx - 22) + ' ' + (ry + 95) + ' C' + (rx - 12) + ' ' + (ry + 55) + ' ' + (rx - 10) + ' ' + (ry + 35) + ' ' + (rx - 8) + ' ' + (ry + 24) + ' L' + (rx + 8) + ' ' + (ry + 24) + ' C' + (rx + 10) + ' ' + (ry + 35) + ' ' + (rx + 12) + ' ' + (ry + 55) + ' ' + (rx + 22) + ' ' + (ry + 95) + 'Z" fill="url(#trunkGrad)"/>';
+  }
+
+  // 1. Dessiner les unions (traits horizontaux / courbes entre partenaires + badge ❤️ ou 💔)
+  S.u.forEach(function(u) {
+    var pa = L.pos[u.a], pb = L.pos[u.b];
+    if (!pa || !pb) return;
+    var x1 = X(pa.x), y1 = Y(pa.g);
+    var x2 = X(pb.x), y2 = Y(pb.g);
+    var midX = (x1 + x2) / 2;
+    var midY = (y1 + y2) / 2;
+    var isSep = u.st === "separated";
+    var dist = Math.abs(x2 - x1);
+
+    if (dist <= 210) {
+      // Partenaires côte à côte
+      q += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + (isSep ? "var(--rose)" : "var(--ac2)") + '" stroke-width="2.5"' + (isSep ? ' stroke-dasharray="5 4"' : '') + '/>';
+    } else {
+      // Partenaires éloignés (ex: remariage) : arc léger au-dessus/dessous
+      var arcY = midY + 34;
+      q += '<path d="M' + x1 + ' ' + y1 + ' Q' + midX + ' ' + arcY + ' ' + x2 + ' ' + y2 + '" fill="none" stroke="' + (isSep ? "var(--rose)" : "var(--ac2)") + '" stroke-width="2"' + (isSep ? ' stroke-dasharray="5 4"' : '') + '/>';
+      midY = (y1 + arcY) / 2;
+    }
+
+    // Badge interactif ❤️ / 💔 au milieu du lien
+    q += '<g class="union-badge" data-uid="' + u.id + '" transform="translate(' + midX + ',' + midY + ')" role="button" tabindex="0" aria-label="Changer le statut de l’union">';
+    q += '<circle r="13" fill="var(--bg)" stroke="' + (isSep ? "var(--rose)" : "var(--ac2)") + '" stroke-width="2"/>';
+    if (isSep) {
+      // Icône cœur brisé / séparation nette en SVG
+      q += '<path d="M0,5 C-5,1 -7,-2 -4.5,-4.5 C-3,-6 -1,-5 0,-3.5 L-1,0 L1.5,1.5 L0,5 Z" fill="var(--rose)"/>';
+      q += '<path d="M0.8,5 C5.8,1 7.8,-2 5.3,-4.5 C3.8,-6 1.8,-5 0.8,-3.5 L-0.2,0 L2.3,1.5 L0.8,5 Z" fill="var(--rose)" opacity=".75"/>';
+    } else {
+      // Icône cœur plein SVG
+      q += '<path d="M0,5.2 C-5.5,1.2 -7.5,-2.2 -4.8,-4.8 C-3.2,-6.3 -1,-5.4 0,-3.6 C1,-5.4 3.2,-6.3 4.8,-4.8 C7.5,-2.2 5.5,1.2 0,5.2 Z" fill="var(--rose)"/>';
+    }
+    q += '</g>';
+  });
+
+  // 2. Dessiner les filiations parents -> enfants
+  S.p.forEach(function(child) {
+    var pc = L.pos[child.id];
+    if (!pc) return;
+    var cx = X(pc.x), cy = Y(pc.g) - 26;
+    var pf = child.f && L.pos[child.f] ? L.pos[child.f] : null;
+    var pm = child.m && L.pos[child.m] ? L.pos[child.m] : null;
+
+    if (pf && pm) {
+      // L'enfant part du milieu du couple (ou de l'union correspondante)
+      var fx = X(pf.x), fy = Y(pf.g);
+      var mx = X(pm.x), my = Y(pm.g);
+      var startX = (fx + mx) / 2;
+      var startY = (fy + my) / 2;
+      if (Math.abs(mx - fx) > 210) startY += 17;
+      var isStep = child.fStep || child.mStep;
+      var midY = (startY + cy) / 2;
+      q += '<path d="M' + startX + ' ' + startY + ' C' + startX + ' ' + midY + ' ' + cx + ' ' + midY + ' ' + cx + ' ' + cy + '" fill="none" stroke="' + (isStep ? "var(--amber)" : "var(--ac2)") + '" stroke-width="2.4" stroke-opacity=".8"' + (isStep ? ' stroke-dasharray="5 4"' : '') + '/>';
+    } else if (pf || pm) {
+      var single = pf || pm;
+      var isStepS = pf ? child.fStep : child.mStep;
+      var sx = X(single.x), sy = Y(single.g) + 26;
+      var midYS = (sy + cy) / 2;
+      q += '<path d="M' + sx + ' ' + sy + ' C' + sx + ' ' + midYS + ' ' + cx + ' ' + midYS + ' ' + cx + ' ' + cy + '" fill="none" stroke="' + (isStepS ? "var(--amber)" : "var(--ac2)") + '" stroke-width="2.4" stroke-opacity=".8"' + (isStepS ? ' stroke-dasharray="5 4"' : '') + '/>';
+    }
+  });
+
+  // 3. Boutons "+" rapides (ghosts) autour de la personne sélectionnée pour ajouter Père / Mère
+  var selP = get(SEL);
+  if (selP && L.pos[selP.id]) {
+    var sp = L.pos[selP.id];
+    var sx = X(sp.x), sy = Y(sp.g);
+    if (!selP.f) {
+      q += '<g class="ghost" data-act="addParent" data-slot="f" data-tid="' + selP.id + '" transform="translate(' + (sx - 56) + ',' + (sy - 72) + ')" role="button" tabindex="0"><circle r="15"/><text y="5" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ac2)">+</text><text y="-20" text-anchor="middle" font-size="10" font-weight="600" fill="var(--mu)">+ Père</text></g>';
+    }
+    if (!selP.m) {
+      q += '<g class="ghost" data-act="addParent" data-slot="m" data-tid="' + selP.id + '" transform="translate(' + (sx + 56) + ',' + (sy - 72) + ')" role="button" tabindex="0"><circle r="15"/><text y="5" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ac2)">+</text><text y="-20" text-anchor="middle" font-size="10" font-weight="600" fill="var(--mu)">+ Mère</text></g>';
+    }
+  }
+
+  // 4. Cartes des personnes avec vrais drapeaux SVG nets et badge de parenté
+  Object.keys(L.pos).forEach(function(id) {
+    var o = L.pos[id];
+    var p = o.p;
+    var x = X(o.x), y = Y(o.g);
+    var c = col(p.c);
+    var isSel = SEL === id;
+    var isRoot = S.r === id;
+    var rel = getRelationLabel(id);
+    var nm = p.n.length > 16 ? p.n.slice(0, 15) + "…" : p.n;
+    var cn = p.c.length > 12 ? p.c.slice(0, 11) + "…" : p.c;
+
+    q += '<g class="nd" tabindex="0" role="button" aria-label="' + esc(p.n) + '" data-id="' + id + '" transform="translate(' + x + ',' + y + ')">';
+    // Pill du lien de parenté au-dessus de la carte
+    if (rel) {
+      var pillW = Math.min(126, Math.max(54, rel.length * 6.2 + 14));
+      q += '<rect x="' + (-pillW / 2) + '" y="-39" width="' + pillW + '" height="16" rx="8" fill="' + (isRoot ? "var(--ac)" : "var(--sf2)") + '" stroke="' + (isRoot ? "var(--ac)" : "var(--ln)") + '" stroke-width="1"/>';
+      q += '<text y="-28" text-anchor="middle" font-size="9.5" font-weight="700" fill="' + (isRoot ? "#fff" : "var(--mu)") + '">' + esc(rel) + '</text>';
+    }
+    // Carte principale
+    q += '<rect class="card-bg" x="-64" y="-22" width="128" height="48" rx="14" fill="var(--bg)" stroke="' + (isSel ? "var(--ac2)" : c) + '" stroke-width="' + (isSel ? 3.5 : 2.2) + '"/>';
+    // Nom
+    q += '<text y="-4" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tx)">' + esc(nm) + '</text>';
+    // Drapeau SVG vectoriel + Pays + Année
+    q += flagSVGGroup(p.c, -54, 4, 16, 11);
+    q += '<text x="-33" y="13" text-anchor="start" font-size="10" fill="var(--mu)">' + esc(cn) + (p.y ? " · " + esc(p.y) : "") + '</text>';
+    q += '</g>';
+  });
+
+  q += '</svg>';
+  sk.innerHTML = q;
+
+  if (!sk.dataset.ok) {
+    centerTree();
+    sk.dataset.ok = "1";
+  }
+}
+
+function centerTree() {
+  var sk = $("sky");
+  var svg = sk.querySelector("svg");
+  if (!svg) return;
+  sk.scrollLeft = Math.max(0, (svg.getAttribute("width") - sk.clientWidth) / 2);
+  sk.scrollTop = Math.max(0, (svg.getAttribute("height") - sk.clientHeight) / 2);
+}
+
+/* ==========================================================================
+   7. SÉLECTEUR DE PAYS PERSONNALISÉ AVEC DRAPEAUX SVG ET RECHERCHE
+   ========================================================================== */
+function buildCountrySelect(selectedCountry) {
+  var cur = getCountry(selectedCountry).n;
+  var optsHtml = P.map(function(c) {
+    return '<div class="csel-opt' + (c.n === cur ? ' active' : '') + '" data-val="' + esc(c.n) + '">' + flagHTML(c.n) + '<span>' + esc(c.n) + '</span></div>';
+  }).join("");
+
+  return '<div class="csel" id="cselBox" data-value="' + esc(cur) + '">' +
+    '<button type="button" class="csel-btn" id="cselBtn">' +
+      '<span class="csel-val" id="cselVal">' + flagHTML(cur) + '<span>' + esc(cur) + '</span></span>' +
+      '<span style="font-size:.75rem;opacity:.7">▼</span>' +
+    '</button>' +
+    '<div class="csel-menu" id="cselMenu">' +
+      '<input type="text" class="csel-search" id="cselSearch" placeholder="Rechercher un pays…">' +
+      '<div class="csel-list" id="cselList">' + optsHtml + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function bindCountrySelect() {
+  var box = $("cselBox");
+  if (!box) return;
+  var btn = $("cselBtn");
+  var search = $("cselSearch");
+  var list = $("cselList");
+
+  btn.onclick = function(e) {
+    e.stopPropagation();
+    box.classList.toggle("open");
+    if (box.classList.contains("open")) {
+      search.value = "";
+      list.querySelectorAll(".csel-opt").forEach(function(o){ o.style.display = "flex"; });
+      search.focus();
+    }
+  };
+
+  search.onclick = function(e){ e.stopPropagation(); };
+  search.oninput = function() {
+    var q = search.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    list.querySelectorAll(".csel-opt").forEach(function(opt) {
+      var val = opt.getAttribute("data-val");
+      var cObj = getCountry(val);
+      var hay = (val + " " + (cObj.tags || "")).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      opt.style.display = hay.indexOf(q) !== -1 ? "flex" : "none";
+    });
+  };
+
+  list.querySelectorAll(".csel-opt").forEach(function(opt) {
+    opt.onclick = function(e) {
+      e.stopPropagation();
+      var val = opt.getAttribute("data-val");
+      box.setAttribute("data-value", val);
+      $("cselVal").innerHTML = flagHTML(val) + '<span>' + esc(val) + '</span>';
+      list.querySelectorAll(".csel-opt").forEach(function(o){ o.classList.remove("active"); });
+      opt.classList.add("active");
+      box.classList.remove("open");
+    };
+  });
+}
+
+document.addEventListener("click", function() {
+  var box = $("cselBox");
+  if (box) box.classList.remove("open");
+});
+
+/* ==========================================================================
+   8. PANNEAU LATÉRAL : CRÉATION, ÉDITION, UNIONS, SÉPARATIONS & FAMILLE ÉLARGIE
+   ========================================================================== */
+function personFormHTML(title, submitBtnHtml, v, extraHtml) {
+  v = v || {};
+  return '<h3>' + title + '</h3>' +
+    '<label>Prénom et nom<input id="fn" value="' + esc(v.n || "") + '" placeholder="Ex : Camille Martin"></label>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+      '<label>Genre<select id="fg">' +
+        '<option value=""' + (!v.g ? ' selected' : '') + '>Non précisé</option>' +
+        '<option value="F"' + (v.g === "F" ? ' selected' : '') + '>Femme</option>' +
+        '<option value="M"' + (v.g === "M" ? ' selected' : '') + '>Homme</option>' +
+      '</select></label>' +
+      '<label>Naissance (année)<input id="fy" type="number" value="' + esc(v.y || "") + '" placeholder="1988"></label>' +
+    '</div>' +
+    '<label>Pays d’origine' + buildCountrySelect(v.c || "France") + '</label>' +
+    (extraHtml || "") +
+    submitBtnHtml;
+}
+
+function drawPan() {
+  var el = $("pan");
+  var p = get(SEL);
+
+  // Cas 1 : Arbre vide -> Créer la personne racine
+  if (!S.p.length) {
+    el.innerHTML = personFormHTML(
+      "Qui êtes-vous ?",
+      '<button id="goCreateRoot">🌱 Planter mon arbre</button>',
+      { c: "France" }
+    );
+    bindCountrySelect();
+    $("goCreateRoot").onclick = function() {
+      var n = $("fn").value.trim();
+      if (!n) { say("Entrez un prénom et un nom."); return; }
+      var id = uid("p");
+      S.p.push({ id: id, n: n, y: $("fy").value, c: $("cselBox").getAttribute("data-value"), g: $("fg").value, f: null, m: null, fStep: false, mStep: false });
+      S.r = id;
+      SEL = id;
+      say("Bienvenue " + n + " ! Ajoutez maintenant vos proches.");
+      render();
+    };
+    return;
+  }
+
+  // Cas 2 : Formulaire d'ajout d'un proche (Parent, Conjoint, Enfant, Frère/Sœur, Oncle/Tante, Cousin/Cousine)
+  if (MODE) {
+    var target = get(MODE.targetId);
+    if (!target) { MODE = null; drawPan(); return; }
+
+    var title = "";
+    var extra = "";
+    var defGender = "";
+
+    if (MODE.type === "addParent") {
+      var isFather = MODE.slot === "f";
+      defGender = isFather ? "M" : "F";
+      title = "Ajouter " + (isFather ? "le père" : "la mère") + " de " + esc(target.n);
+      extra = '<label style="flex-direction:row;align-items:center;gap:8px;cursor:pointer;color:var(--tx)"><input type="checkbox" id="fIsStep"> Parent recomposé / adoptif (beau-parent, ne compte pas dans l’ADN)</label>';
+    } else if (MODE.type === "addPartner") {
+      title = "Ajouter un(e) partenaire à " + esc(target.n);
+      extra = '<label>Statut de l’union<select id="fUnionSt">' +
+        '<option value="active">❤️ En couple / Mariés (union actuelle)</option>' +
+        '<option value="separated">💔 Séparés / Divorcés (ex-conjoint)</option>' +
+      '</select></label>';
+    } else if (MODE.type === "addChild") {
+      title = "Ajouter un enfant à " + esc(target.n);
+      var unions = getUnionsOf(target.id);
+      var partnerOpts = '<option value="">Autre parent inconnu / non affiché</option>';
+      unions.forEach(function(u) {
+        var otherId = u.a === target.id ? u.b : u.a;
+        var otherP = get(otherId);
+        if (otherP) {
+          partnerOpts += '<option value="' + otherP.id + '"' + (u.st === "active" ? " selected" : "") + '>' + esc(otherP.n) + (u.st === "separated" ? " (ex-conjoint)" : " (conjoint actuel)") + '</option>';
+        }
+      });
+      extra = '<label>Second parent<select id="fOtherParent">' + partnerOpts + '</select></label>';
+    } else if (MODE.type === "addSibling") {
+      title = "Ajouter un frère / une sœur à " + esc(target.n);
+      extra = '<p class="hint">Sera rattaché(e) aux mêmes parents que ' + esc(target.n) + '.</p>';
+    } else if (MODE.type === "addUncleAunt") {
+      title = "Ajouter un oncle / une tante à " + esc(target.n);
+      extra = '<label>Côté de la famille<select id="fSide">' +
+        '<option value="paternal">Côté paternel (frère/sœur du père)</option>' +
+        '<option value="maternal">Côté maternel (frère/sœur de la mère)</option>' +
+      '</select></label>';
+    } else if (MODE.type === "addCousin") {
+      title = "Ajouter un cousin / une cousine à " + esc(target.n);
+      // Trouver les oncles/tantes existants
+      var pIds = [target.f, target.m].filter(Boolean);
+      var gpIds = [];
+      pIds.forEach(function(pid){ var pp = get(pid); if (pp) { if (pp.f) gpIds.push(pp.f); if (pp.m) gpIds.push(pp.m); } });
+      var uas = S.p.filter(function(cand){
+        return pIds.indexOf(cand.id) === -1 && ((cand.f && gpIds.indexOf(cand.f) !== -1) || (cand.m && gpIds.indexOf(cand.m) !== -1));
+      });
+      var uaOpts = uas.map(function(u){ return '<option value="' + u.id + '">Enfant de ' + esc(u.n) + '</option>'; }).join("");
+      uaOpts += '<option value="NEW_PATERNAL">+ Créer un nouvel oncle/tante côté paternel</option>';
+      uaOpts += '<option value="NEW_MATERNAL">+ Créer un nouvel oncle/tante côté maternel</option>';
+      extra = '<label>Parent du cousin / de la cousine<select id="fCousinParent">' + uaOpts + '</select></label>';
+    }
+
+    el.innerHTML = personFormHTML(
+      title,
+      '<div class="row" style="margin-top:4px"><button id="goAdd" style="flex:1">Ajouter</button><button class="sec" id="cancelAdd">Annuler</button></div>',
+      { c: target.c, g: defGender },
+      extra
+    );
+    bindCountrySelect();
+    $("fn").focus();
+
+    $("cancelAdd").onclick = function(){ MODE = null; drawPan(); };
+    $("goAdd").onclick = function() {
+      var n = $("fn").value.trim();
+      if (!n) { say("Entrez un prénom et un nom."); return; }
+      var y = $("fy").value;
+      var c = $("cselBox").getAttribute("data-value");
+      var g = $("fg").value;
+      var newId = uid("p");
+
+      if (MODE.type === "addParent") {
+        var isStep = $("fIsStep").checked;
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: null, m: null, fStep: false, mStep: false });
+        target[MODE.slot] = newId;
+        target[MODE.slot + "Step"] = isStep;
+        if (target.f && target.m) ensureUnion(target.f, target.m, "active");
+        say(n + " ajouté(e) comme " + (MODE.slot === "f" ? "père" : "mère") + ".");
+      }
+      else if (MODE.type === "addPartner") {
+        var st = $("fUnionSt").value;
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: null, m: null, fStep: false, mStep: false });
+        ensureUnion(target.id, newId, st);
+        say(n + " ajouté(e) (" + (st === "separated" ? "séparés" : "en couple") + ").");
+      }
+      else if (MODE.type === "addChild") {
+        var otherId = $("fOtherParent").value || null;
+        var fId = null, mId = null;
+        if (target.g === "F") { mId = target.id; fId = otherId; }
+        else { fId = target.id; mId = otherId; }
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: fId, m: mId, fStep: false, mStep: false });
+        say("Enfant " + n + " ajouté(e).");
+      }
+      else if (MODE.type === "addSibling") {
+        // S'assurer que target a au moins un parent pour relier le frère/la sœur
+        if (!target.f && !target.m) {
+          var autoParId = uid("p");
+          S.p.push({ id: autoParId, n: "Parent de " + target.n, y: "", c: target.c, g: "M", f: null, m: null, fStep: false, mStep: false });
+          target.f = autoParId;
+        }
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: target.f, m: target.m, fStep: target.fStep, mStep: target.mStep });
+        say(n + " ajouté(e) comme frère/sœur.");
+      }
+      else if (MODE.type === "addUncleAunt") {
+        var side = $("fSide").value;
+        var parId = side === "paternal" ? target.f : target.m;
+        if (!parId) {
+          parId = uid("p");
+          S.p.push({ id: parId, n: (side === "paternal" ? "Père" : "Mère") + " de " + target.n, y: "", c: target.c, g: side === "paternal" ? "M" : "F", f: null, m: null, fStep: false, mStep: false });
+          if (side === "paternal") target.f = parId; else target.m = parId;
+        }
+        var parObj = get(parId);
+        if (!parObj.f && !parObj.m) {
+          var gpId = uid("p");
+          S.p.push({ id: gpId, n: "Grand-parent (" + parObj.n + ")", y: "", c: parObj.c, g: "M", f: null, m: null, fStep: false, mStep: false });
+          parObj.f = gpId;
+        }
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: parObj.f, m: parObj.m, fStep: false, mStep: false });
+        say(n + " ajouté(e) comme oncle / tante.");
+      }
+      else if (MODE.type === "addCousin") {
+        var cpVal = $("fCousinParent").value;
+        var uaId = cpVal;
+        if (cpVal === "NEW_PATERNAL" || cpVal === "NEW_MATERNAL") {
+          var isPat = cpVal === "NEW_PATERNAL";
+          var pSideId = isPat ? target.f : target.m;
+          if (!pSideId) {
+            pSideId = uid("p");
+            S.p.push({ id: pSideId, n: (isPat ? "Père" : "Mère") + " de " + target.n, y: "", c: target.c, g: isPat ? "M" : "F", f: null, m: null, fStep: false, mStep: false });
+            if (isPat) target.f = pSideId; else target.m = pSideId;
+          }
+          var pSideObj = get(pSideId);
+          if (!pSideObj.f && !pSideObj.m) {
+            var gpNewId = uid("p");
+            S.p.push({ id: gpNewId, n: "Grand-parent (" + pSideObj.n + ")", y: "", c: pSideObj.c, g: "M", f: null, m: null, fStep: false, mStep: false });
+            pSideObj.f = gpNewId;
+          }
+          uaId = uid("p");
+          S.p.push({ id: uaId, n: "Oncle/Tante de " + target.n, y: "", c: c, g: "", f: pSideObj.f, m: pSideObj.m, fStep: false, mStep: false });
+        }
+        var uaObj = get(uaId);
+        var cfId = uaObj && uaObj.g === "F" ? null : uaId;
+        var cmId = uaObj && uaObj.g === "F" ? uaId : null;
+        S.p.push({ id: newId, n: n, y: y, c: c, g: g, f: cfId, m: cmId, fStep: false, mStep: false });
+        say(n + " ajouté(e) comme cousin / cousine.");
+      }
+
+      MODE = null;
+      SEL = newId;
+      render();
+    };
+    return;
+  }
+
+  // Cas 3 : Édition de la personne sélectionnée + actions pour agrandir la famille
+  if (!p) {
+    SEL = S.r;
+    p = get(SEL);
+  }
+  var relBadge = getRelationLabel(p.id);
+  var unions = getUnionsOf(p.id);
+  var unionsHtml = "";
+  if (unions.length) {
+    unionsHtml = '<div style="margin-top:4px"><span style="font-size:.8rem;font-weight:600;color:var(--mu)">Couples & Séparations :</span><div class="union-list">';
+    unions.forEach(function(u) {
+      var otherId = u.a === p.id ? u.b : u.a;
+      var other = get(otherId);
+      if (!other) return;
+      var isSep = u.st === "separated";
+      unionsHtml += '<div class="union-item">' +
+        '<span>' + esc(other.n) + '</span>' +
+        '<span class="st ' + (isSep ? 'st-sep' : 'st-active') + '" data-toggle-u="' + u.id + '" title="Cliquer pour changer entre En couple et Séparés">' +
+          (isSep ? '💔 Séparés' : '❤️ En couple') +
+        '</span>' +
+      '</div>';
+    });
+    unionsHtml += '</div></div>';
+  }
+
+  var quickBtns = '<div style="margin-top:4px"><span style="font-size:.8rem;font-weight:600;color:var(--mu);display:block;margin-bottom:6px">Agrandir autour de ' + esc(p.n.split(" ")[0]) + ' :</span>' +
+    '<div class="quick-grid">' +
+      (!p.f ? '<button type="button" class="soft" data-mode="addParent" data-slot="f">+ Père</button>' : '') +
+      (!p.m ? '<button type="button" class="soft" data-mode="addParent" data-slot="m">+ Mère</button>' : '') +
+      '<button type="button" class="soft" data-mode="addPartner">+ Conjoint / Ex</button>' +
+      '<button type="button" class="soft" data-mode="addChild">+ Enfant</button>' +
+      '<button type="button" class="soft" data-mode="addSibling">+ Frère / Sœur</button>' +
+      '<button type="button" class="soft" data-mode="addUncleAunt">+ Oncle / Tante</button>' +
+      '<button type="button" class="soft" data-mode="addCousin" style="grid-column:span 2">+ Cousin / Cousine</button>' +
+    '</div></div>';
+
+  var stepToggles = "";
+  if (p.f && get(p.f)) {
+    stepToggles += '<label style="flex-direction:row;align-items:center;gap:6px;font-size:.78rem;cursor:pointer"><input type="checkbox" id="edFStep"' + (p.fStep ? ' checked' : '') + '> ' + esc(get(p.f).n) + ' est beau-père / adoptif</label>';
+  }
+  if (p.m && get(p.m)) {
+    stepToggles += '<label style="flex-direction:row;align-items:center;gap:6px;font-size:.78rem;cursor:pointer"><input type="checkbox" id="edMStep"' + (p.mStep ? ' checked' : '') + '> ' + esc(get(p.m).n) + ' est belle-mère / adoptive</label>';
+  }
+
+  el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">' +
+      '<span class="rel-pill">' + esc(relBadge) + '</span>' +
+      (p.id !== S.r ? '<button type="button" class="sec sm" id="setRootBtn" title="Définir cette personne comme point de départ de l’arbre">🏠 Définir comme racine</button>' : '') +
+    '</div>' +
+    personFormHTML(
+      "Fiche de " + esc(p.n),
+      '<button id="savePerson">💾 Enregistrer</button>',
+      p,
+      stepToggles
+    ) +
+    unionsHtml +
+    quickBtns +
+    (p.id !== S.r ? '<button type="button" class="red sm" id="delPerson" style="margin-top:4px">Supprimer cette personne</button>' : '');
+
+  bindCountrySelect();
+
+  $("savePerson").onclick = function() {
+    var n = $("fn").value.trim();
+    if (!n) { say("Le nom ne peut pas être vide."); return; }
+    p.n = n;
+    p.y = $("fy").value;
+    p.c = $("cselBox").getAttribute("data-value");
+    p.g = $("fg").value;
+    if ($("edFStep")) p.fStep = $("edFStep").checked;
+    if ($("edMStep")) p.mStep = $("edMStep").checked;
+    say("Fiche de " + p.n + " mise à jour.");
+    render();
+  };
+
+  if ($("setRootBtn")) {
+    $("setRootBtn").onclick = function() {
+      S.r = p.id;
+      say(p.n + " est maintenant la racine de l’arbre.");
+      render();
+    };
+  }
+
+  if ($("delPerson")) {
+    $("delPerson").onclick = function() {
+      askConfirm("Supprimer " + p.n + " ?", "Cette personne sera retirée de l’arbre ainsi que ses liens directs.", function() {
+        removePerson(p.id);
+        SEL = S.r;
+        say(p.n + " a été supprimé(e).");
+        render();
+      });
+    };
+  }
+
+  el.querySelectorAll("[data-toggle-u]").forEach(function(badge) {
+    badge.onclick = function() {
+      var u = S.u.find(function(x){ return x.id === badge.getAttribute("data-toggle-u"); });
+      if (u) {
+        u.st = u.st === "separated" ? "active" : "separated";
+        say(u.st === "separated" ? "Statut changé : Séparés 💔" : "Statut changé : En couple ❤️");
+        render();
+      }
+    };
+  });
+
+  el.querySelectorAll("[data-mode]").forEach(function(btn) {
+    btn.onclick = function() {
+      MODE = {
+        type: btn.getAttribute("data-mode"),
+        targetId: p.id,
+        slot: btn.getAttribute("data-slot") || null
+      };
+      drawPan();
+    };
+  });
+}
+
+function removePerson(id) {
+  S.p = S.p.filter(function(x){ return x.id !== id; });
+  S.u = S.u.filter(function(u){ return u.a !== id && u.b !== id; });
+  S.p.forEach(function(x) {
+    if (x.f === id) { x.f = null; x.fStep = false; }
+    if (x.m === id) { x.m = null; x.mStep = false; }
+  });
+}
+
+/* ==========================================================================
+   9. GRAPHIQUE CAMEMBERT, BARRES D'ORIGINES & CARTE DU MONDE AVEC DRAPEAUX SVG
+   ========================================================================== */
+function pie(o) {
+  var R = 84, c = 90, a0 = -Math.PI / 2;
+  var q = '<svg viewBox="0 0 180 180" role="img" aria-label="Camembert des origines">';
+  if (o.length === 1) {
+    q += '<circle cx="90" cy="90" r="' + R + '" fill="' + col(o[0].n) + '"/><text x="90" y="96" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">100 %</text>';
+  } else {
+    o.forEach(function(x) {
+      var a1 = a0 + x.v / 100 * 2 * Math.PI, m = (a0 + a1) / 2;
+      q += '<path d="M' + c + ' ' + c + ' L' + (c + R * Math.cos(a0)) + ' ' + (c + R * Math.sin(a0)) + ' A' + R + ' ' + R + ' 0 ' + (x.v > 50 ? 1 : 0) + ' 1 ' + (c + R * Math.cos(a1)) + ' ' + (c + R * Math.sin(a1)) + 'Z" fill="' + col(x.n) + '" stroke="var(--bg)" stroke-width="2"><title>' + esc(x.n) + " " + fmt(x.v) + '</title></path>';
+      if (x.v >= 7) {
+        q += '<text x="' + (c + R * .62 * Math.cos(m)) + '" y="' + (c + R * .62 * Math.sin(m) + 4) + '" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">' + Math.round(x.v) + '%</text>';
+      }
+      a0 = a1;
+    });
+  }
+  return q + '</svg>';
+}
+
+function rows(o) {
+  return o.map(function(x) {
+    return '<div class="bar">' + flagHTML(x.n) + '<span>' + esc(x.n) + '</span><i style="width:' + Math.max(6, x.v * .7) + 'px;background:' + col(x.n) + '"></i><em>' + fmt(x.v) + '</em></div>';
+  }).join("");
+}
+
+function render() {
+  drawTree();
+  drawPan();
+
+  var t = T();
+  var o = t ? calc(t.id) : [];
+  $("ot").innerHTML = t ? 'Origines de ' + esc(t.n) + ' <span class="rel-pill" style="font-size:.72rem">' + esc(getRelationLabel(t.id)) + '</span>' : "Origines";
+  $("orig").innerHTML = o.length
+    ? '<div class="pie">' + pie(o) + '</div>' + rows(o) + '<p class="hint" style="margin-top:10px">Cliquez sur n’importe quel membre de l’arbre pour voir ses origines. Les beaux-parents recomposés sont affichés sur l’arbre sans fausser les pourcentages biologiques.</p>'
+    : '<p class="hint">Les pourcentages apparaîtront dès que votre arbre aura une première personne.</p>';
+
+  // Carte du monde avec drapeaux SVG vectoriels nets
+  var m = '<svg viewBox="0 0 360 180" role="img" aria-label="Carte des origines">';
+  for (var i = 0; i <= 12; i++) {
+    m += '<line class="gr" x1="' + i * 30 + '" y1="0" x2="' + i * 30 + '" y2="180"/>' + (i <= 6 ? '<line class="gr" x1="0" y1="' + i * 30 + '" x2="360" y2="' + i * 30 + '"/>' : "");
+  }
+  CONT.forEach(function(c) {
+    m += '<polygon class="land" points="' + c.map(function(q){ return (q[0] + 180) + "," + (90 - q[1]); }).join(" ") + '"/>';
+  });
+  o.forEach(function(x) {
+    var pp = getCountry(x.n);
+    if (!pp) return;
+    var cx = pp.o + 180, cy = 90 - pp.a;
+    var r = 6 + Math.sqrt(x.v) * .85;
+    var fw = Math.min(18, Math.max(11, r * 1.35));
+    var fh = fw * 0.67;
+    m += '<g><title>' + esc(x.n) + " : " + fmt(x.v) + '</title>';
+    m += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + col(x.n) + '" fill-opacity=".35" stroke="' + col(x.n) + '" stroke-width="1.2"/>';
+    m += flagSVGGroup(x.n, cx - fw / 2, cy - fh / 2, fw, fh);
+    m += '</g>';
+  });
+  $("map").innerHTML = m + '</svg><p class="hint" style="margin-top:8px">' + (t ? "Origines de " + esc(t.n) + ". " : "") + 'Chaque drapeau indique un pays d’origine proportionnellement à sa part.</p>';
+
+  // Carte de partage
+  $("card").innerHTML = t
+    ? '<div class="pie">' + pie(o) + '</div><div><h3>Les origines de ' + esc(t.n) + '</h3>' + rows(o) + '<p class="hint" style="margin-top:8px">Arbre familial de ' + S.p.length + ' personnes · généré avec Racines</p></div>'
+    : '<p class="hint">Votre résultat s’affichera ici.</p>';
+
+  $("code").value = S.p.length ? encode() : "";
+  save();
+}
+
+/* ==========================================================================
+   10. INTERACTIONS SOURIS / CLAVIER / GLISSER-DÉPLACER / COPIE / EXEMPLE COMPLET
+   ========================================================================== */
+$("sky").addEventListener("click", function(e) {
+  var uBadge = e.target.closest(".union-badge");
+  if (uBadge) {
+    var u = S.u.find(function(x){ return x.id === uBadge.getAttribute("data-uid"); });
+    if (u) {
+      u.st = u.st === "separated" ? "active" : "separated";
+      say(u.st === "separated" ? "Union passée en : Séparés 💔" : "Union passée en : En couple ❤️");
+      render();
+    }
+    return;
+  }
+  var g = e.target.closest(".ghost");
+  if (g) {
+    MODE = { type: g.getAttribute("data-act"), targetId: g.getAttribute("data-tid"), slot: g.getAttribute("data-slot") };
+    drawPan();
+    return;
+  }
+  var n = e.target.closest(".nd");
+  if (n) {
+    SEL = n.getAttribute("data-id");
+    MODE = null;
+    render();
+  }
+});
+
+// Glisser pour parcourir l'arbre (drag-to-scroll)
+(function() {
+  var sk = $("sky"), down = false, sx = 0, sy = 0, sl = 0, st = 0;
+  sk.addEventListener("mousedown", function(e) {
+    if (e.target.closest(".nd,.ghost,.union-badge")) return;
+    down = true; sx = e.pageX; sy = e.pageY; sl = sk.scrollLeft; st = sk.scrollTop;
+  });
+  window.addEventListener("mouseup", function(){ down = false; });
+  sk.addEventListener("mousemove", function(e) {
+    if (!down) return;
+    e.preventDefault();
+    sk.scrollLeft = sl - (e.pageX - sx);
+    sk.scrollTop = st - (e.pageY - sy);
+  });
+})();
+
+function txtSummary() {
+  var r = T();
+  if (!r) return "";
+  return "Les origines de " + r.n + " :\n" +
+    calc(r.id).map(function(x){ return "• " + x.n + " : " + fmt(x.v); }).join("\n") +
+    "\n\nRetrouvez l’arbre complet avec ce code :\n" + encode();
+}
+
+function copyText(t, okMsg) {
+  var a = $("code");
+  var prev = a.value;
+  a.value = t;
+  a.select();
+  try {
+    document.execCommand("copy");
+    say(okMsg);
+  } catch (e) {
+    say("Sélectionnez le texte dans le champ ci-dessous pour le copier.");
+  }
+  a.value = prev;
+}
+
+$("centerBtn").onclick = centerTree;
+$("cpRes").onclick = function(){ if (S.r) copyText(txtSummary(), "Résultat copié dans le presse-papiers !"); else say("Ajoutez d’abord des personnes."); };
+$("cpCode").onclick = function(){ if (S.p.length) copyText(encode(), "Code ARB- copié !"); else say("Ajoutez d’abord des personnes."); };
+
+$("load").onclick = function() {
+  try {
+    var t = $("code").value;
+    var i = t.indexOf("ARB-");
+    if (i === -1) throw 0;
+    S = decode(t.slice(i));
+    SEL = S.r;
+    MODE = null;
+    $("sky").dataset.ok = "";
+    say("Arbre retrouvé : " + S.p.length + " personnes chargées.");
+    render();
+  } catch (e) {
+    say("Code invalide. Vérifiez qu’il commence bien par ARB-.");
+  }
+};
+
+$("reset").onclick = function() {
+  askConfirm("Effacer tout l’arbre ?", "Toutes les personnes et unions enregistrées seront supprimées.", function() {
+    S = { p: [], u: [], r: null };
+    SEL = null;
+    MODE = null;
+    $("sky").dataset.ok = "";
+    say("Arbre effacé.");
+    render();
+  });
+};
+
+// Exemple complet : famille recomposée (séparation des parents, belle-mère, demi-frère), oncle, tante et cousine
+$("demo").onclick = function() {
+  MODE = null;
+  S = {
+    r: "a",
+    p: [
+      { id: "a", n: "Léa Martin", y: "1996", c: "France", g: "F", f: "b", m: "c", fStep: false, mStep: false },
+      { id: "b", n: "Paul Martin", y: "1966", c: "France", g: "M", f: "d", m: "e", fStep: false, mStep: false },
+      { id: "c", n: "Nadia Benali", y: "1968", c: "Algérie", g: "F", f: "f", m: "g", fStep: false, mStep: false },
+      { id: "bm", n: "Sofia Mendes", y: "1974", c: "Portugal", g: "F", f: null, m: null, fStep: false, mStep: false },
+      { id: "df", n: "Lucas Martin", y: "2006", c: "France", g: "M", f: "b", m: "bm", fStep: false, mStep: false },
+      { id: "on", n: "Karim Benali", y: "1971", c: "Algérie", g: "M", f: "f", m: "g", fStep: false, mStep: false },
+      { id: "ta", n: "Inès Trabelsi", y: "1973", c: "Tunisie", g: "F", f: null, m: null, fStep: false, mStep: false },
+      { id: "co", n: "Yasmine Benali", y: "1999", c: "Algérie", g: "F", f: "on", m: "ta", fStep: false, mStep: false },
+      { id: "d", n: "Jean Martin", y: "1938", c: "France", g: "M", f: null, m: null, fStep: false, mStep: false },
+      { id: "e", n: "Rosa Rossi", y: "1940", c: "Italie", g: "F", f: null, m: null, fStep: false, mStep: false },
+      { id: "f", n: "Omar Benali", y: "1940", c: "Algérie", g: "M", f: null, m: null, fStep: false, mStep: false },
+      { id: "g", n: "Fatima Cherif", y: "1945", c: "Maroc", g: "F", f: null, m: null, fStep: false, mStep: false }
+    ],
+    u: [
+      { id: "u1", a: "b", b: "c", st: "separated" },
+      { id: "u2", a: "b", b: "bm", st: "active" },
+      { id: "u3", a: "on", b: "ta", st: "active" },
+      { id: "u4", a: "d", b: "e", st: "active" },
+      { id: "u5", a: "f", b: "g", st: "active" }
+    ]
+  };
+  SEL = "a";
+  $("sky").dataset.ok = "";
+  say("Exemple complet chargé : séparation, nouvelle union (belle-mère), demi-frère, oncle, tante et cousine !");
+  render();
+};
+
+// Bascule thème clair / sombre
+$("themeBtn").onclick = function() {
+  var cur = document.documentElement.getAttribute("data-theme");
+  var next = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+};
+
+// Chargement depuis localStorage (v2 ou migration depuis v1)
+try {
+  var raw = localStorage.getItem(K) || localStorage.getItem(K_OLD);
+  if (raw) {
+    S = migrateIfNeeded(JSON.parse(raw));
+    SEL = S.r;
+  }
+} catch (e) {}
+
+render();
+</script>
+</body>
+</html>
